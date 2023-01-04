@@ -22,7 +22,7 @@ COPY --link /templates/ /app/templates/
 RUN set -eux && \
     apt-get update && \
     apt-get upgrade -qq --assume-yes && \
-    apt-get install -qq --assume-yes build-essential python-dev && \
+    apt-get install -qq --assume-yes build-essential python-dev zopfli && \
     python3 -m pip install --upgrade pip && \
     python3 -m pip install poetry && \
     POETRY_VIRTUALENVS_CREATE=false poetry install --no-dev --no-root --no-interaction --no-ansi && \
