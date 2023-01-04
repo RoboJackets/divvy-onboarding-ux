@@ -98,15 +98,15 @@ def index() -> Any:
     if "state" not in session:
         return oauth.keycloak.authorize_redirect(url_for("login", _external=True))
 
-    if session["state"] == "provisioned":
+    if session["user_state"] == "provisioned":
         session.clear()
         return render_template("provisioned.html")
 
-    if session["state"] == "ineligible":
+    if session["user_state"] == "ineligible":
         session.clear()
         return render_template("ineligible.html")
 
-    if session["state"] == "requested":
+    if session["user_state"] == "requested":
         return render_template("submitted.html")
 
     email_provider = None
@@ -189,15 +189,15 @@ def login() -> Any:  # pylint: disable=too-many-branches,too-many-statements
 
     if "roles" in userinfo:
         if "provisioned" in userinfo["roles"]:
-            session["state"] = "provisioned"
+            session["user_state"] = "provisioned"
         elif "eligible" in userinfo["roles"]:
-            session["state"] = "eligible"
+            session["user_state"] = "eligible"
         else:
-            session["state"] = "ineligible"
+            session["user_state"] = "ineligible"
     else:
-        session["state"] = "ineligible"
+        session["user_state"] = "ineligible"
 
-    if session["state"] == "ineligible" or session["state"] == "eligible":
+    if session["user_state"] == "ineligible" or session["user_state"] == "eligible":
         apiary_user_response = get(
             url=app.config["APIARY_URL"] + "/api/v1/users/" + username,
             headers={
@@ -224,14 +224,14 @@ def login() -> Any:  # pylint: disable=too-many-branches,too-many-statements
                 and len(apiary_user["teams"]) > 0
                 and role_check
             ):
-                session["state"] = "eligible"
+                session["user_state"] = "eligible"
 
                 if "manager" in apiary_user and apiary_user["manager"] is not None:
                     session["manager_id"] = apiary_user["manager"]["id"]
                 else:
                     session["manager_id"] = None
 
-    if session["state"] == "eligible":  # pylint: disable=too-many-nested-blocks
+    if session["user_state"] == "eligible":  # pylint: disable=too-many-nested-blocks
         ldap = Connection(
             Server("whitepages.gatech.edu"),
             auto_bind=True,  # type: ignore
@@ -354,7 +354,7 @@ def verify_google_redirect() -> Any:
     if "state" not in session:
         raise Unauthorized("Not logged in")
 
-    if session["state"] != "eligible":
+    if session["user_state"] != "eligible":
         raise Unauthorized("Not eligible")
 
     return oauth.google.authorize_redirect(
@@ -387,7 +387,7 @@ def verify_microsoft_redirect() -> Any:
     if "state" not in session:
         raise Unauthorized("Not logged in")
 
-    if session["state"] != "eligible":
+    if session["user_state"] != "eligible":
         raise Unauthorized("Not eligible")
 
     return oauth.microsoft.authorize_redirect(
@@ -420,11 +420,13 @@ def save_draft() -> Dict[str, str]:
     if "state" not in session:
         raise Unauthorized("Not logged in")
 
-    if session["state"] != "eligible":
+    if session["user_state"] != "eligible":
         raise Unauthorized("Not eligible")
 
     session["first_name"] = request.json["first_name"]  # type: ignore
     session["last_name"] = request.json["last_name"]  # type: ignore
+    if session["email_address"] != request.json["email_address"]:
+        session["email_verified"] = False
     session["email_address"] = request.json["email_address"]  # type: ignore
     session["manager_id"] = None if request.json["manager"] == "" else int(request.json["manager"])  # type: ignore  # noqa: E501
     session["order_physical_card"] = request.json["order_physical_card"]  # type: ignore
@@ -445,7 +447,7 @@ def submit() -> Response:
     if "state" not in session:
         raise Unauthorized("Not logged in")
 
-    if session["state"] != "eligible":
+    if session["user_state"] != "eligible":
         raise Unauthorized("Not eligible")
 
     manager = None
@@ -528,7 +530,7 @@ def submit() -> Response:
     )
 
     if postmark_response.status_code == 200:
-        session["state"] = "requested"
+        session["user_state"] = "requested"
         return render_template("submitted.html")
 
     raise InternalServerError(
