@@ -152,8 +152,8 @@ job "divvy-onboarding-ux" {
         port = "http"
 
         tags = [
-          "uwsgi"
-          "http"
+          "uwsgi",
+          "http",
         ]
 
         check {
