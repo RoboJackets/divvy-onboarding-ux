@@ -3,6 +3,11 @@ variable "image" {
   description = "The image to use for running the service"
 }
 
+variable "hostname" {
+  type = string
+  description = "The hostname for this instance of the service"
+}
+
 locals {
   # compressed in this context refers to the config string itself, not the assets
   compressed_nginx_configuration = trimspace(
@@ -172,6 +177,9 @@ job "divvy-onboarding-ux" {
           protocol = "http"
           timeout = "1s"
           type = "http"
+          header {
+            Host = [var.hostname]
+          }
         }
 
         check_restart {
