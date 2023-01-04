@@ -425,7 +425,7 @@ def save_draft() -> Dict[str, str]:
 
     session["first_name"] = request.json["first_name"]  # type: ignore
     session["last_name"] = request.json["last_name"]  # type: ignore
-    if session["email_address"] != request.json["email_address"]:
+    if session["email_address"] != request.json["email_address"]:  # type: ignore
         session["email_verified"] = False
     session["email_address"] = request.json["email_address"]  # type: ignore
     session["manager_id"] = None if request.json["manager"] == "" else int(request.json["manager"])  # type: ignore  # noqa: E501
