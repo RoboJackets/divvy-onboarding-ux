@@ -62,6 +62,10 @@ job "divvy-onboarding-ux" {
       source = "assets"
     }
 
+    network {
+      port "http" {}
+    }
+
     volume "run" {
       type = "host"
       source = "run"
