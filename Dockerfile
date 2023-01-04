@@ -1,3 +1,5 @@
+# syntax = docker/dockerfile:1.4
+
 ARG base_image=python:3.10-slim-bullseye
 
 FROM ${base_image}
