@@ -5,7 +5,6 @@ description = "Overengineered web form to facilitate onboarding users to Divvy"
 authors = ["Kristaps Berzinch <kristapsberzinch@gmail.com>"]
 license = "MIT"
 readme = "README.md"
-packages = [{include = "divvy_onboarding_ux"}]
 
 [tool.poetry.dependencies]
 python = "^3.10"
