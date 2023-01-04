@@ -538,4 +538,7 @@ def submit() -> Response:
 
 @app.get("/ping")
 def ping() -> Dict[str, str]:
+    """
+    Returns an arbitrary successful response, for health checks
+    """
     return {"status": "ok"}
