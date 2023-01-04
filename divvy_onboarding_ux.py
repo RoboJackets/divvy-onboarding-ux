@@ -534,3 +534,8 @@ def submit() -> Response:
     raise InternalServerError(
         "Postmark returned unexpected response code " + str(postmark_response.status_code)
     )
+
+
+@app.get("/ping")
+def ping() -> Dict[str, str]:
+    return {"status": "ok"}
