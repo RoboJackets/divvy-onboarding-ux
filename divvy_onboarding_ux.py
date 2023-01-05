@@ -95,7 +95,7 @@ def index() -> Any:
     """
     Generates the main form or messaging if the user shouldn't fill it out
     """
-    if "state" not in session:
+    if "user_state" not in session:
         return oauth.keycloak.authorize_redirect(url_for("login", _external=True))
 
     if session["user_state"] == "provisioned":
@@ -351,7 +351,7 @@ def verify_google_redirect() -> Any:
     """
     Redirects user to Google for email address verification
     """
-    if "state" not in session:
+    if "user_state" not in session:
         raise Unauthorized("Not logged in")
 
     if session["user_state"] != "eligible":
@@ -384,7 +384,7 @@ def verify_microsoft_redirect() -> Any:
     """
     Redirects user to Microsoft for email address verification
     """
-    if "state" not in session:
+    if "user_state" not in session:
         raise Unauthorized("Not logged in")
 
     if session["user_state"] != "eligible":
@@ -417,7 +417,7 @@ def save_draft() -> Dict[str, str]:
     """
     Save a draft of the form (triggered on field change)
     """
-    if "state" not in session:
+    if "user_state" not in session:
         raise Unauthorized("Not logged in")
 
     if session["user_state"] != "eligible":
@@ -444,7 +444,7 @@ def submit() -> Response:
     """
     Submits the form for fulfillment
     """
-    if "state" not in session:
+    if "user_state" not in session:
         raise Unauthorized("Not logged in")
 
     if session["user_state"] != "eligible":
