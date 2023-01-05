@@ -413,7 +413,7 @@ def verify_microsoft_complete() -> Response:
     return redirect(url_for("index"))
 
 
-@app.post("/api/save")
+@app.post("/save")
 def save_draft() -> Dict[str, str]:
     """
     Save a draft of the form (triggered on field change)

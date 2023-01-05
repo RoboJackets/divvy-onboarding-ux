@@ -78,7 +78,7 @@ const mailboxRegex = new RegExp("^\\d{6} Georgia Tech Station$");
 
         saveForm = function(event) {
             var xhr = new XMLHttpRequest();
-            xhr.open('POST', '/api/save');
+            xhr.open('POST', '/save');
             xhr.setRequestHeader("Content-Type", "application/json")
             xhr.responseType = 'json';
             xhr.send(
@@ -114,7 +114,6 @@ const mailboxRegex = new RegExp("^\\d{6} Georgia Tech Station$");
         }
 
         const emailVerificationButtonAction = function(event) {
-            saveForm(event)
             if (emailInput.value.endsWith("@gatech.edu")) {
                 window.location.href = "/verify-email/microsoft";
             } else if (emailInput.value.endsWith("@robojackets.org")) {
@@ -316,7 +315,6 @@ const mailboxRegex = new RegExp("^\\d{6} Georgia Tech Station$");
         lastNameInput.addEventListener("change", saveForm);
         lastNameInput.addEventListener("input", nameValidation);
 
-        emailInput.addEventListener("change", saveForm);
         emailInput.addEventListener("change", markEmailUnverified)
         emailInput.addEventListener("input", emailValidation);
         emailInput.addEventListener("input", emailVerificationButtonState);
