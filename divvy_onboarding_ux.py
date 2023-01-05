@@ -179,6 +179,7 @@ def login() -> Any:  # pylint: disable=too-many-branches,too-many-statements
     session["city"] = ""
     session["address_state"] = None
     session["zip_code"] = ""
+    session["manager_id"] = None
 
     if "googleWorkspaceAccount" in userinfo:
         session["email_address"] = userinfo["googleWorkspaceAccount"]
@@ -226,10 +227,10 @@ def login() -> Any:  # pylint: disable=too-many-branches,too-many-statements
             ):
                 session["user_state"] = "eligible"
 
-                if "manager" in apiary_user and apiary_user["manager"] is not None:
-                    session["manager_id"] = apiary_user["manager"]["id"]
-                else:
-                    session["manager_id"] = None
+            if "manager" in apiary_user and apiary_user["manager"] is not None:
+                session["manager_id"] = apiary_user["manager"]["id"]
+            else:
+                session["manager_id"] = None
 
     if session["user_state"] == "eligible":  # pylint: disable=too-many-nested-blocks
         ldap = Connection(
