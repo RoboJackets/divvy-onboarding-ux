@@ -152,7 +152,7 @@ def index() -> Any:
         shipping_option=session["shipping_option"],
         address_line_one=session["address_line_one"],
         address_line_two=session["address_line_two"],
-        state=session["state"],
+        state=session["address_state"],
         city=session["city"],
         zip_code=session["zip_code"],
         states=states,
@@ -177,7 +177,7 @@ def login() -> Any:  # pylint: disable=too-many-branches,too-many-statements
     session["address_line_one"] = ""
     session["address_line_two"] = ""
     session["city"] = ""
-    session["state"] = None
+    session["address_state"] = None
     session["zip_code"] = ""
 
     if "googleWorkspaceAccount" in userinfo:
@@ -259,7 +259,7 @@ def login() -> Any:  # pylint: disable=too-many-branches,too-many-statements
             session["address_line_one"] = "351 Ferst Dr NW"
             session["address_line_two"] = georgia_tech_mailbox.value.split(",")[0]
             session["city"] = "Atlanta"
-            session["state"] = "GA"
+            session["address_state"] = "GA"
             session["zip_code"] = "30332"
         elif home_address is not None and home_address.value is not None:
             address_string = home_address.value
@@ -283,7 +283,7 @@ def login() -> Any:  # pylint: disable=too-many-branches,too-many-statements
                 session["address_line_one"] = ""
                 session["address_line_two"] = ""
                 session["city"] = ""
-                session["state"] = None
+                session["address_state"] = None
 
                 if (
                     "result" in address_validation_json
@@ -311,7 +311,7 @@ def login() -> Any:  # pylint: disable=too-many-branches,too-many-statements
                         "administrativeArea"
                         in address_validation_json["result"]["address"]["postalAddress"]
                     ):
-                        session["state"] = address_validation_json["result"]["address"][
+                        session["address_state"] = address_validation_json["result"]["address"][
                             "postalAddress"
                         ]["administrativeArea"]
 
@@ -434,7 +434,7 @@ def save_draft() -> Dict[str, str]:
     session["address_line_one"] = request.json["address_line_one"]  # type: ignore
     session["address_line_two"] = request.json["address_line_two"]  # type: ignore
     session["city"] = request.json["city"]  # type: ignore
-    session["state"] = request.json["state"]  # type: ignore
+    session["address_state"] = request.json["state"]  # type: ignore
     session["zip_code"] = request.json["zip_code"]  # type: ignore
     return {"status": "ok"}
 
