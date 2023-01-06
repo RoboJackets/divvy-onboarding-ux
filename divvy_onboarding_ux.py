@@ -445,7 +445,7 @@ def save_draft() -> Dict[str, str]:
 
 
 @app.post("/")
-def submit() -> Response:
+def submit() -> Union[Response, str]:
     """
     Submits the form for fulfillment
     """
@@ -454,6 +454,9 @@ def submit() -> Response:
 
     if session["user_state"] != "eligible":
         raise Unauthorized("Not eligible")
+
+    if not session["email_verified"]:
+        raise BadRequest("Email address must be verified")
 
     manager = None
     manager_email = None
