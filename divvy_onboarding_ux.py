@@ -1,19 +1,34 @@
 """
 Overengineered web form to facilitate onboarding users to Divvy
 """
-
 from re import fullmatch
 from typing import Any, Dict, Union
 
+import sentry_sdk
 from authlib.integrations.flask_client import OAuth  # type: ignore
 
 from flask import Flask, Response, redirect, render_template, request, session, url_for
+from flask.helpers import get_debug_flag
 
 from ldap3 import Connection, Server
 
 from requests import get, post
+from sentry_sdk import set_user
+from sentry_sdk.integrations.flask import FlaskIntegration
+from sentry_sdk.integrations.pure_eval import PureEvalIntegration
 
 from werkzeug.exceptions import BadRequest, InternalServerError, Unauthorized
+
+sentry_sdk.init(
+    debug=get_debug_flag(),
+    integrations=[
+        FlaskIntegration(),
+        PureEvalIntegration(),
+    ],
+    traces_sample_rate=1.0,
+    attach_stacktrace=True,
+    request_bodies="always",
+)
 
 app = Flask(__name__)
 app.config.from_prefixed_env()
@@ -98,6 +113,13 @@ def index() -> Any:
     if "user_state" not in session:
         return oauth.keycloak.authorize_redirect(url_for("login", _external=True))
 
+    set_user({
+        "id": session["user_id"],
+        "username": session["username"],
+        "email": session["email_address"],
+        "ip_address": request.remote_addr
+    })
+
     if session["user_state"] == "provisioned":
         session.clear()
         return render_template("provisioned.html")
@@ -170,6 +192,8 @@ def login() -> Any:  # pylint: disable=too-many-branches,too-many-statements
     userinfo = token["userinfo"]
 
     username = userinfo["preferred_username"]
+    session["user_id"] = None
+    session["username"] = username
     session["first_name"] = userinfo["given_name"]
     session["last_name"] = userinfo["family_name"]
     session["order_physical_card"] = True
@@ -187,6 +211,13 @@ def login() -> Any:  # pylint: disable=too-many-branches,too-many-statements
     else:
         session["email_address"] = userinfo["email"]
         session["email_verified"] = False
+
+    set_user({
+        "id": session["user_id"],
+        "username": session["username"],
+        "email": session["email_address"],
+        "ip_address": request.remote_addr
+    })
 
     if "roles" in userinfo:
         if "provisioned" in userinfo["roles"]:
@@ -211,6 +242,15 @@ def login() -> Any:  # pylint: disable=too-many-branches,too-many-statements
 
         if apiary_user_response.status_code == 200:
             apiary_user = apiary_user_response.json()["user"]
+
+            session["user_id"] = apiary_user["id"]
+
+            set_user({
+                "id": session["user_id"],
+                "username": session["username"],
+                "email": session["email_address"],
+                "ip_address": request.remote_addr
+            })
 
             role_check = False
 
@@ -359,6 +399,13 @@ def verify_google_redirect() -> Any:
     if "user_state" not in session:
         raise Unauthorized("Not logged in")
 
+    set_user({
+        "id": session["user_id"],
+        "username": session["username"],
+        "email": session["email_address"],
+        "ip_address": request.remote_addr
+    })
+
     if session["user_state"] != "eligible":
         raise Unauthorized("Not eligible")
 
@@ -374,6 +421,13 @@ def verify_google_complete() -> Response:
     """
     Handles the return from Google and updates session appropriately
     """
+    set_user({
+        "id": session["user_id"],
+        "username": session["username"],
+        "email": session["email_address"],
+        "ip_address": request.remote_addr
+    })
+
     token = oauth.google.authorize_access_token()
 
     userinfo = token["userinfo"]
@@ -392,6 +446,13 @@ def verify_microsoft_redirect() -> Any:
     if "user_state" not in session:
         raise Unauthorized("Not logged in")
 
+    set_user({
+        "id": session["user_id"],
+        "username": session["username"],
+        "email": session["email_address"],
+        "ip_address": request.remote_addr
+    })
+
     if session["user_state"] != "eligible":
         raise Unauthorized("Not eligible")
 
@@ -407,6 +468,12 @@ def verify_microsoft_complete() -> Response:
     """
     Handles the return from Google and updates session appropriately
     """
+    set_user({
+        "id": session["user_id"],
+        "username": session["username"],
+        "email": session["email_address"],
+        "ip_address": request.remote_addr
+    })
     token = oauth.microsoft.authorize_access_token()
 
     userinfo = token["userinfo"]
@@ -418,12 +485,19 @@ def verify_microsoft_complete() -> Response:
 
 
 @app.post("/save")
-def save_draft() -> Dict[str, str]:
+def save() -> Dict[str, str]:
     """
     Save a draft of the form (triggered on field change)
     """
     if "user_state" not in session:
         raise Unauthorized("Not logged in")
+
+    set_user({
+        "id": session["user_id"],
+        "username": session["username"],
+        "email": session["email_address"],
+        "ip_address": request.remote_addr
+    })
 
     if session["user_state"] != "eligible":
         raise Unauthorized("Not eligible")
@@ -451,6 +525,13 @@ def submit() -> Union[Response, str]:
     """
     if "user_state" not in session:
         raise Unauthorized("Not logged in")
+
+    set_user({
+        "id": session["user_id"],
+        "username": session["username"],
+        "email": session["email_address"],
+        "ip_address": request.remote_addr
+    })
 
     if session["user_state"] != "eligible":
         raise Unauthorized("Not eligible")
@@ -552,3 +633,11 @@ def ping() -> Dict[str, str]:
     Returns an arbitrary successful response, for health checks
     """
     return {"status": "ok"}
+
+
+@app.get("/error")
+def error():
+    """
+    Throw a server error for testing Sentry and whatever is going on with Nginx
+    """
+    raise InternalServerError("this is a test")

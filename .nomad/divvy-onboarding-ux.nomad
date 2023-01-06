@@ -149,9 +149,9 @@ job "divvy-onboarding-ux" {
       }
 
       template {
-        data = "DOCKER_IMAGE_DIGEST=\"${split("@", var.image)[1]}\""
+        data = "SENTRY_RELEASE=\"${split("@", var.image)[1]}\""
 
-        destination = "/secrets/.docker_image_digest"
+        destination = "/secrets/.sentry_release"
         env = true
       }
 
