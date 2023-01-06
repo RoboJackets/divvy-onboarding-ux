@@ -14,7 +14,7 @@ ENV DEBIAN_FRONTEND=noninteractive \
 RUN set -eux && \
     apt-get update && \
     apt-get upgrade -qq --assume-yes && \
-    apt-get install -qq --assume-yes build-essential python-dev zopfli && \
+    apt-get install -qq --assume-yes build-essential python-dev libpcre3 libpcre3-dev zopfli && \
     python3 -m pip install --upgrade pip && \
     python3 -m pip install poetry && \
     useradd --home-dir /app/ --create-home --shell /bin/bash uwsgi
@@ -28,7 +28,7 @@ COPY --link --chown=uwsgi:uwsgi /templates/ /app/templates/
 COPY --link --chown=uwsgi:uwsgi /divvy_onboarding_ux.py /pyproject.toml /poetry.lock /app/
 
 RUN set -eux && \
-    POETRY_VIRTUALENVS_CREATE=false poetry install --no-dev --no-root --no-interaction --no-ansi && \
+    POETRY_VIRTUALENVS_CREATE=false poetry install --only main --no-root --no-interaction --no-ansi && \
     zopfli --gzip -v --i10 /app/static/app.js && \
     touch /app/static/app.js.gz /app/static/app.js
 

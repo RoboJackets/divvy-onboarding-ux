@@ -1,6 +1,6 @@
 [[package]]
 name = "astroid"
-version = "2.12.13"
+version = "2.12.14"
 description = "An abstract syntax tree for Python with inference support."
 category = "dev"
 optional = false
@@ -73,6 +73,14 @@ colorama = ["colorama (>=0.4.3)"]
 d = ["aiohttp (>=3.7.4)"]
 jupyter = ["ipython (>=7.8.0)", "tokenize-rt (>=3.2.0)"]
 uvloop = ["uvloop (>=0.15.2)"]
+
+[[package]]
+name = "blinker"
+version = "1.5"
+description = "Fast, simple object-to-object and broadcast signaling"
+category = "main"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 
 [[package]]
 name = "certifi"
@@ -468,8 +476,10 @@ python-versions = "*"
 
 [package.dependencies]
 asttokens = {version = "*", optional = true, markers = "extra == \"pure_eval\""}
+blinker = {version = ">=1.1", optional = true, markers = "extra == \"flask\""}
 certifi = "*"
 executing = {version = "*", optional = true, markers = "extra == \"pure_eval\""}
+flask = {version = ">=0.11", optional = true, markers = "extra == \"flask\""}
 pure-eval = {version = "*", optional = true, markers = "extra == \"pure_eval\""}
 urllib3 = {version = ">=1.26.11", markers = "python_version >= \"3.6\""}
 
@@ -613,12 +623,12 @@ python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,>=2.7"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "1ffb9d9d5857a807869dcdaa9eadcda8207a30b8f122200a26178ad7311bfd1d"
+content-hash = "5c415b2cd6922ab81bf2127e45bf681ed389ff32dd35beb84f03fa530e00f27b"
 
 [metadata.files]
 astroid = [
-    {file = "astroid-2.12.13-py3-none-any.whl", hash = "sha256:10e0ad5f7b79c435179d0d0f0df69998c4eef4597534aae44910db060baeb907"},
-    {file = "astroid-2.12.13.tar.gz", hash = "sha256:1493fe8bd3dfd73dc35bd53c9d5b6e49ead98497c47b2307662556a5692d29d7"},
+    {file = "astroid-2.12.14-py3-none-any.whl", hash = "sha256:a1fbaad9d3e5f2eeb8e3a1d1d6008a081b1aac33ef86ff7742ae0714d92e9cf2"},
+    {file = "astroid-2.12.14.tar.gz", hash = "sha256:b573ed96112061150eade70851c277a92fba544812b781836ab16fedbbddb497"},
 ]
 asttokens = [
     {file = "asttokens-2.2.1-py2.py3-none-any.whl", hash = "sha256:6b0ac9e93fb0335014d382b8fa9b3afa7df546984258005da0b9e7095b3deb1c"},
@@ -645,6 +655,10 @@ black = [
     {file = "black-22.12.0-cp39-cp39-win_amd64.whl", hash = "sha256:559c7a1ba9a006226f09e4916060982fd27334ae1998e7a38b3f33a37f7a2148"},
     {file = "black-22.12.0-py3-none-any.whl", hash = "sha256:436cc9167dd28040ad90d3b404aec22cedf24a6e4d7de221bec2730ec0c97bcf"},
     {file = "black-22.12.0.tar.gz", hash = "sha256:229351e5a18ca30f447bf724d007f890f97e13af070bb6ad4c0a441cd7596a2f"},
+]
+blinker = [
+    {file = "blinker-1.5-py2.py3-none-any.whl", hash = "sha256:1eb563df6fdbc39eeddc177d953203f99f097e9bf0e2b8f9f3cf18b6ca425e36"},
+    {file = "blinker-1.5.tar.gz", hash = "sha256:923e5e2f69c155f2cc42dafbbd70e16e3fde24d2d4aa2ab72fbe386238892462"},
 ]
 certifi = [
     {file = "certifi-2022.12.7-py3-none-any.whl", hash = "sha256:4ad3232f5e926d6718ec31cfc1fcadfde020920e278684144551c91769c7bc18"},
