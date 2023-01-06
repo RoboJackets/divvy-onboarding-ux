@@ -4,7 +4,6 @@ Overengineered web form to facilitate onboarding users to Divvy
 from re import fullmatch
 from typing import Any, Dict, Union
 
-import sentry_sdk
 from authlib.integrations.flask_client import OAuth  # type: ignore
 
 from flask import Flask, Response, redirect, render_template, request, session, url_for
@@ -13,6 +12,8 @@ from flask.helpers import get_debug_flag
 from ldap3 import Connection, Server
 
 from requests import get, post
+
+import sentry_sdk
 from sentry_sdk import set_user
 from sentry_sdk.integrations.flask import FlaskIntegration
 from sentry_sdk.integrations.pure_eval import PureEvalIntegration
@@ -113,12 +114,14 @@ def index() -> Any:
     if "user_state" not in session:
         return oauth.keycloak.authorize_redirect(url_for("login", _external=True))
 
-    set_user({
-        "id": session["user_id"],
-        "username": session["username"],
-        "email": session["email_address"],
-        "ip_address": request.remote_addr
-    })
+    set_user(
+        {
+            "id": session["user_id"],
+            "username": session["username"],
+            "email": session["email_address"],
+            "ip_address": request.remote_addr,
+        }
+    )
 
     if session["user_state"] == "provisioned":
         session.clear()
@@ -212,12 +215,14 @@ def login() -> Any:  # pylint: disable=too-many-branches,too-many-statements
         session["email_address"] = userinfo["email"]
         session["email_verified"] = False
 
-    set_user({
-        "id": session["user_id"],
-        "username": session["username"],
-        "email": session["email_address"],
-        "ip_address": request.remote_addr
-    })
+    set_user(
+        {
+            "id": session["user_id"],
+            "username": session["username"],
+            "email": session["email_address"],
+            "ip_address": request.remote_addr,
+        }
+    )
 
     if "roles" in userinfo:
         if "provisioned" in userinfo["roles"]:
@@ -245,12 +250,14 @@ def login() -> Any:  # pylint: disable=too-many-branches,too-many-statements
 
             session["user_id"] = apiary_user["id"]
 
-            set_user({
-                "id": session["user_id"],
-                "username": session["username"],
-                "email": session["email_address"],
-                "ip_address": request.remote_addr
-            })
+            set_user(
+                {
+                    "id": session["user_id"],
+                    "username": session["username"],
+                    "email": session["email_address"],
+                    "ip_address": request.remote_addr,
+                }
+            )
 
             role_check = False
 
@@ -399,12 +406,14 @@ def verify_google_redirect() -> Any:
     if "user_state" not in session:
         raise Unauthorized("Not logged in")
 
-    set_user({
-        "id": session["user_id"],
-        "username": session["username"],
-        "email": session["email_address"],
-        "ip_address": request.remote_addr
-    })
+    set_user(
+        {
+            "id": session["user_id"],
+            "username": session["username"],
+            "email": session["email_address"],
+            "ip_address": request.remote_addr,
+        }
+    )
 
     if session["user_state"] != "eligible":
         raise Unauthorized("Not eligible")
@@ -421,12 +430,14 @@ def verify_google_complete() -> Response:
     """
     Handles the return from Google and updates session appropriately
     """
-    set_user({
-        "id": session["user_id"],
-        "username": session["username"],
-        "email": session["email_address"],
-        "ip_address": request.remote_addr
-    })
+    set_user(
+        {
+            "id": session["user_id"],
+            "username": session["username"],
+            "email": session["email_address"],
+            "ip_address": request.remote_addr,
+        }
+    )
 
     token = oauth.google.authorize_access_token()
 
@@ -446,12 +457,14 @@ def verify_microsoft_redirect() -> Any:
     if "user_state" not in session:
         raise Unauthorized("Not logged in")
 
-    set_user({
-        "id": session["user_id"],
-        "username": session["username"],
-        "email": session["email_address"],
-        "ip_address": request.remote_addr
-    })
+    set_user(
+        {
+            "id": session["user_id"],
+            "username": session["username"],
+            "email": session["email_address"],
+            "ip_address": request.remote_addr,
+        }
+    )
 
     if session["user_state"] != "eligible":
         raise Unauthorized("Not eligible")
@@ -468,12 +481,14 @@ def verify_microsoft_complete() -> Response:
     """
     Handles the return from Google and updates session appropriately
     """
-    set_user({
-        "id": session["user_id"],
-        "username": session["username"],
-        "email": session["email_address"],
-        "ip_address": request.remote_addr
-    })
+    set_user(
+        {
+            "id": session["user_id"],
+            "username": session["username"],
+            "email": session["email_address"],
+            "ip_address": request.remote_addr,
+        }
+    )
     token = oauth.microsoft.authorize_access_token()
 
     userinfo = token["userinfo"]
@@ -492,12 +507,14 @@ def save() -> Dict[str, str]:
     if "user_state" not in session:
         raise Unauthorized("Not logged in")
 
-    set_user({
-        "id": session["user_id"],
-        "username": session["username"],
-        "email": session["email_address"],
-        "ip_address": request.remote_addr
-    })
+    set_user(
+        {
+            "id": session["user_id"],
+            "username": session["username"],
+            "email": session["email_address"],
+            "ip_address": request.remote_addr,
+        }
+    )
 
     if session["user_state"] != "eligible":
         raise Unauthorized("Not eligible")
@@ -526,12 +543,14 @@ def submit() -> Union[Response, str]:
     if "user_state" not in session:
         raise Unauthorized("Not logged in")
 
-    set_user({
-        "id": session["user_id"],
-        "username": session["username"],
-        "email": session["email_address"],
-        "ip_address": request.remote_addr
-    })
+    set_user(
+        {
+            "id": session["user_id"],
+            "username": session["username"],
+            "email": session["email_address"],
+            "ip_address": request.remote_addr,
+        }
+    )
 
     if session["user_state"] != "eligible":
         raise Unauthorized("Not eligible")
@@ -635,8 +654,8 @@ def ping() -> Dict[str, str]:
     return {"status": "ok"}
 
 
-@app.get("/error")
-def error():
+@app.get("/error")  # type: ignore
+def error() -> None:
     """
     Throw a server error for testing Sentry and whatever is going on with Nginx
     """
