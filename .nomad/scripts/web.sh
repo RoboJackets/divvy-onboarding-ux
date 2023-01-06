@@ -1,1 +1,1 @@
-exec uwsgi --master --uwsgi-socket /var/opt/nomad/run/${NOMAD_JOB_NAME}-${NOMAD_ALLOC_ID}.sock --chmod-socket=777 --http-socket 0.0.0.0:${NOMAD_PORT_http} --chdir=/app/ --module=divvy_onboarding_ux:app --buffer-size=8192
+exec uwsgi --master --enable-threads --uwsgi-socket /var/opt/nomad/run/${NOMAD_JOB_NAME}-${NOMAD_ALLOC_ID}.sock --chmod-socket=777 --http-socket 0.0.0.0:${NOMAD_PORT_http} --chdir=/app/ --module=divvy_onboarding_ux:app --buffer-size=8192
