@@ -652,11 +652,3 @@ def ping() -> Dict[str, str]:
     Returns an arbitrary successful response, for health checks
     """
     return {"status": "ok"}
-
-
-@app.get("/error")  # type: ignore
-def error() -> None:
-    """
-    Throw a server error for testing Sentry and whatever is going on with Nginx
-    """
-    raise InternalServerError("this is a test")
