@@ -3,7 +3,7 @@ Overengineered web form to facilitate onboarding users to Divvy
 """
 
 from re import fullmatch
-from typing import Any, Dict
+from typing import Any, Dict, Union
 
 from authlib.integrations.flask_client import OAuth  # type: ignore
 
@@ -13,7 +13,7 @@ from ldap3 import Connection, Server
 
 from requests import get, post
 
-from werkzeug.exceptions import InternalServerError, Unauthorized
+from werkzeug.exceptions import BadRequest, InternalServerError, Unauthorized
 
 app = Flask(__name__)
 app.config.from_prefixed_env()
@@ -248,30 +248,34 @@ def login() -> Any:  # pylint: disable=too-many-branches,too-many-statements
 
         if result is True:
             for entry in ldap.entries:
-                if "postOfficeBox" in entry:
-                    georgia_tech_mailbox = entry["postOfficeBox"]
+                if (
+                    "postOfficeBox" in entry
+                    and entry["postOfficeBox"] is not None
+                    and entry["postOfficeBox"].value is not None
+                ):
+                    georgia_tech_mailbox = entry["postOfficeBox"].value
                 if (
                     "homePostalAddress" in entry
-                    and entry["homePostalAddress"] != "UNPUBLISHED INFO"
+                    and entry["homePostalAddress"] is not None
+                    and entry["homePostalAddress"].value is not None
+                    and entry["homePostalAddress"].value != "UNPUBLISHED INFO"
                 ):
-                    home_address = entry["homePostalAddress"]
+                    home_address = entry["homePostalAddress"].value
 
-        if georgia_tech_mailbox is not None and georgia_tech_mailbox.value is not None:
+        if georgia_tech_mailbox is not None:
             session["address_line_one"] = "351 Ferst Dr NW"
-            session["address_line_two"] = georgia_tech_mailbox.value.split(",")[0]
+            session["address_line_two"] = georgia_tech_mailbox.split(",")[0]
             session["city"] = "Atlanta"
             session["address_state"] = "GA"
             session["zip_code"] = "30332"
-        elif home_address is not None and home_address.value is not None:
-            address_string = home_address.value
-
+        elif home_address is not None:
             address_validation_response = post(
                 url="https://addressvalidation.googleapis.com/v1:validateAddress",
                 params={"key": app.config["GOOGLE_MAPS_API_KEY"]},
                 json={
                     "address": {
                         "regionCode": "US",
-                        "addressLines": [address_string],
+                        "addressLines": [home_address],
                     },
                     "enableUspsCass": True,
                 },
