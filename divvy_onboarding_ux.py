@@ -184,7 +184,7 @@ def index() -> Any:
         city=session["city"],
         zip_code=session["zip_code"],
         states=states,
-        google_maps_api_key=app.config["GOOGLE_MAPS_API_KEY"],
+        google_maps_api_key=app.config["GOOGLE_MAPS_FRONTEND_API_KEY"],
     )
 
 
@@ -321,7 +321,7 @@ def login() -> Any:  # pylint: disable=too-many-branches,too-many-statements
         elif home_address is not None:
             address_validation_response = post(
                 url="https://addressvalidation.googleapis.com/v1:validateAddress",
-                params={"key": app.config["GOOGLE_MAPS_API_KEY"]},
+                params={"key": app.config["GOOGLE_MAPS_BACKEND_API_KEY"]},
                 json={
                     "address": {
                         "regionCode": "US",
