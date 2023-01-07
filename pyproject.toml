@@ -1,0 +1,36 @@
+[tool.poetry]
+name = "divvy-onboarding-ux"
+version = "0"
+description = "Overengineered web form to facilitate onboarding users to Divvy"
+authors = ["Kristaps Berzinch <kristapsberzinch@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+Flask = "^2.2.2"
+Authlib = "^1.2.0"
+requests = "^2.28.1"
+ldap3 = "^2.9.1"
+uwsgi = "^2.0.21"
+sentry-sdk = {extras = ["pure-eval", "flask"], version = "^1.12.1"}
+
+[tool.poetry.group.dev.dependencies]
+black = "^22.12.0"
+flake8 = "^6.0.0"
+flake8-black = "^0.3.6"
+flake8-bugbear = "^22.12.6"
+flake8-import-order = "^0.18.2"
+flake8-json = "^21.7.0"
+mypy = "^0.991"
+pylint = "^2.15.9"
+types-requests = "^2.28.11.7"
+types-ldap3 = "^2.9.13.3"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 100
+target-version = ['py310']
