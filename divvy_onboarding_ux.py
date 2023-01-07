@@ -567,9 +567,6 @@ def submit() -> Union[Response, str]:
     if not session["email_verified"]:
         raise BadRequest("Email address must be verified")
 
-    manager = None
-    manager_email = None
-
     manager_response = get(
         url=app.config["APIARY_URL"] + "/api/v1/users/" + request.form["manager"],
         headers={
@@ -579,37 +576,51 @@ def submit() -> Union[Response, str]:
         timeout=(5, 5),
     )
 
-    if manager_response.status_code == 200:
-        manager = manager_response.json()["user"]
+    if manager_response.status_code != 200:
+        raise InternalServerError("Failed to retrieve manager information from Apiary")
 
-        if (
-            "gmail_address" in manager
-            and manager["gmail_address"] is not None
-            and manager["gmail_address"].endswith("@robojackets.org")
-        ):
-            manager_email = manager["full_name"] + " <" + manager["gmail_address"] + ">"
+    manager = manager_response.json()["user"]
+
+    if (
+        "gmail_address" in manager
+        and manager["gmail_address"] is not None
+        and manager["gmail_address"].endswith("@robojackets.org")
+    ):
+        manager_email_address = manager["gmail_address"]
+    else:
+        keycloak_access_token_response = post(
+            url=app.config["KEYCLOAK_SERVER"] + "/realms/" + app.config["KEYCLOAK_REALM"] + "/protocol/openid-connect/token",
+            data={
+                "client_id": app.config["KEYCLOAK_CLIENT_ID"],
+                "client_secret": app.config["KEYCLOAK_CLIENT_SECRET"],
+                "grant_type": "client_credentials",
+            },
+        )
+
+        if keycloak_access_token_response.status_code != 200:
+            raise InternalServerError("Failed to retrieve access token for Keycloak")
+
+        keycloak_user_response = get(
+            url=app.config["KEYCLOAK_SERVER"] + "/admin/realms/" + app.config["KEYCLOAK_REALM"] + "/users",
+            params={
+                "username": manager["uid"],
+                "exact": True,
+            },
+        )
+
+        if keycloak_user_response.status_code != 200:
+            raise InternalServerError("Failed to search for manager in Keycloak")
+
+        if len(keycloak_user_response.json()) == 0:
+            manager_email_address = manager["gt_email"]
+        elif len(keycloak_user_response.json()) == 1:
+            keycloak_user = keycloak_user_response.json()[0]
+            if "attributes" in keycloak_user and "googleWorkspaceAccount" in keycloak_user["attributes"]:
+                manager_email_address = keycloak_user["attributes"]["googleWorkspaceAccount"][0]
+            else:
+                manager_email_address = manager["gt_email"]
         else:
-            manager_email = manager["full_name"] + " < " + manager["gt_email"] + ">"
-
-    physical_card_details = "\nPhysical Card: " + (
-        "Yes" if "order_physical_card" in request.form else "No"
-    )
-
-    if "order_physical_card" in request.form:
-        physical_card_details += (
-            "\nShipping Method: " + request.form["shipping_option"].capitalize()
-        )
-        physical_card_details += "\nAddress:\n" + request.form["address_line_one"]
-        if request.form["address_line_two"] != "":
-            physical_card_details += "\n" + request.form["address_line_two"]
-        physical_card_details += (
-            "\n"
-            + request.form["city"]
-            + ", "
-            + request.form["state"]
-            + " "
-            + request.form["zip_code"]
-        )
+            raise InternalServerError("More than one result for manager search in Keycloak")
 
     postmark_response = post(
         url="https://api.postmarkapp.com/email",
@@ -624,23 +635,13 @@ def submit() -> Union[Response, str]:
             + request.form["email_address"]
             + ">, "
             + app.config["POSTMARK_TO_TREASURER"]
-            + (", " + manager_email if manager_email is not None else ""),
+            + ", "
+            + manager["full_name"] + " < " + manager_email_address + ">",
             "Subject": request.form["first_name"]
             + " "
             + request.form["last_name"]
             + " requested a Divvy account",
-            "TextBody": "Please review the below information and reply-all if it is not correct.\n\nFirst Name: "  # noqa: E501
-            + request.form["first_name"]
-            + "\nLast Name: "
-            + request.form["last_name"]
-            + "\nEmail Address: "
-            + request.form["email_address"]
-            + (
-                "\nManager: " + manager["full_name"]
-                if manager is not None
-                else "\nManager ID: " + request.form["manager"]
-            )
-            + physical_card_details,
+            "TextBody": render_template("email.txt", manager=manager["full_name"]),
             "MessageStream": "outbound",
         },
         timeout=(5, 5),
