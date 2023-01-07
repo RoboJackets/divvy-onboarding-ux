@@ -29,6 +29,9 @@ sentry_sdk.init(
     traces_sample_rate=1.0,
     attach_stacktrace=True,
     request_bodies="always",
+    in_app_include=[
+        "divvy_onboarding_ux",
+    ],
 )
 
 app = Flask(__name__)
@@ -430,6 +433,9 @@ def verify_google_complete() -> Response:
     """
     Handles the return from Google and updates session appropriately
     """
+    if "user_state" not in session:
+        raise Unauthorized("Not logged in")
+
     set_user(
         {
             "id": session["user_id"],
@@ -481,6 +487,9 @@ def verify_microsoft_complete() -> Response:
     """
     Handles the return from Google and updates session appropriately
     """
+    if "user_state" not in session:
+        raise Unauthorized("Not logged in")
+
     set_user(
         {
             "id": session["user_id"],
