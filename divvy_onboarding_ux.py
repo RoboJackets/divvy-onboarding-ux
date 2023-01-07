@@ -14,7 +14,7 @@ from ldap3 import Connection, Server
 from requests import get, post
 
 import sentry_sdk
-from sentry_sdk import set_user
+from sentry_sdk import set_user, capture_message
 from sentry_sdk.integrations.flask import FlaskIntegration
 from sentry_sdk.integrations.pure_eval import PureEvalIntegration
 
@@ -397,6 +397,8 @@ def login() -> Any:  # pylint: disable=too-many-branches,too-many-statements
                         session["address_line_two"] = address_validation_json["result"]["address"][
                             "postalAddress"
                         ]["addressLines"][1]
+            else:
+                capture_message("Failed to validate homePostalAddress from Whitepages: " + address_validation_response.text)
 
     return redirect(url_for("index"))
 
