@@ -122,11 +122,18 @@ job "divvy-onboarding-ux" {
         network_mode = "host"
 
         entrypoint = [
-          "/bin/bash",
-          "-xeuo",
-          "pipefail",
-          "-c",
-          trimspace(file("scripts/web.sh"))
+          "/usr/local/bin/uwsgi",
+          "--master",
+          "--enable-threads",
+          "--processes=4",
+          "--uwsgi-socket",
+          "/var/opt/nomad/run/${NOMAD_JOB_NAME}-${NOMAD_ALLOC_ID}.sock",
+          "--chmod-socket=777",
+          "--http-socket 0.0.0.0:${NOMAD_PORT_http}",
+          "--chdir=/app/",
+          "--module=divvy_onboarding_ux:app",
+          "--buffer-size=8192",
+          "--single-interpreter",
         ]
       }
 
