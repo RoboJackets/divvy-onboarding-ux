@@ -545,7 +545,7 @@ def save() -> Dict[str, str]:
 
 
 @app.post("/")
-def submit() -> Union[Response, str]:
+def submit() -> Union[Response, str]:  # pylint: disable=too-many-branches
     """
     Submits the form for fulfillment
     """
@@ -589,23 +589,31 @@ def submit() -> Union[Response, str]:
         manager_email_address = manager["gmail_address"]
     else:
         keycloak_access_token_response = post(
-            url=app.config["KEYCLOAK_SERVER"] + "/realms/" + app.config["KEYCLOAK_REALM"] + "/protocol/openid-connect/token",
+            url=app.config["KEYCLOAK_SERVER"]
+            + "/realms/"
+            + app.config["KEYCLOAK_REALM"]
+            + "/protocol/openid-connect/token",
             data={
                 "client_id": app.config["KEYCLOAK_CLIENT_ID"],
                 "client_secret": app.config["KEYCLOAK_CLIENT_SECRET"],
                 "grant_type": "client_credentials",
             },
+            timeout=(5, 5),
         )
 
         if keycloak_access_token_response.status_code != 200:
             raise InternalServerError("Failed to retrieve access token for Keycloak")
 
         keycloak_user_response = get(
-            url=app.config["KEYCLOAK_SERVER"] + "/admin/realms/" + app.config["KEYCLOAK_REALM"] + "/users",
+            url=app.config["KEYCLOAK_SERVER"]
+            + "/admin/realms/"
+            + app.config["KEYCLOAK_REALM"]
+            + "/users",
             params={
                 "username": manager["uid"],
                 "exact": True,
             },
+            timeout=(5, 5),
         )
 
         if keycloak_user_response.status_code != 200:
@@ -615,7 +623,10 @@ def submit() -> Union[Response, str]:
             manager_email_address = manager["gt_email"]
         elif len(keycloak_user_response.json()) == 1:
             keycloak_user = keycloak_user_response.json()[0]
-            if "attributes" in keycloak_user and "googleWorkspaceAccount" in keycloak_user["attributes"]:
+            if (
+                "attributes" in keycloak_user
+                and "googleWorkspaceAccount" in keycloak_user["attributes"]
+            ):
                 manager_email_address = keycloak_user["attributes"]["googleWorkspaceAccount"][0]
             else:
                 manager_email_address = manager["gt_email"]
@@ -636,7 +647,10 @@ def submit() -> Union[Response, str]:
             + ">, "
             + app.config["POSTMARK_TO_TREASURER"]
             + ", "
-            + manager["full_name"] + " < " + manager_email_address + ">",
+            + manager["full_name"]
+            + " < "
+            + manager_email_address
+            + ">",
             "Subject": request.form["first_name"]
             + " "
             + request.form["last_name"]
