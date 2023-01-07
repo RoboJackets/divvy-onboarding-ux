@@ -590,12 +590,10 @@ def submit() -> Union[Response, str]:  # pylint: disable=too-many-branches
     else:
         keycloak_access_token_response = post(
             url=app.config["KEYCLOAK_SERVER"]
-            + "/realms/"
-            + app.config["KEYCLOAK_REALM"]
-            + "/protocol/openid-connect/token",
+            + "/realms/master/protocol/openid-connect/token",
             data={
-                "client_id": app.config["KEYCLOAK_CLIENT_ID"],
-                "client_secret": app.config["KEYCLOAK_CLIENT_SECRET"],
+                "client_id": app.config["KEYCLOAK_ADMIN_CLIENT_ID"],
+                "client_secret": app.config["KEYCLOAK_ADMIN_CLIENT_SECRET"],
                 "grant_type": "client_credentials",
             },
             timeout=(5, 5),
@@ -612,6 +610,9 @@ def submit() -> Union[Response, str]:  # pylint: disable=too-many-branches
             params={
                 "username": manager["uid"],
                 "exact": True,
+            },
+            headers={
+                "Authorization": "Bearer " + keycloak_access_token_response.json()["access_token"],
             },
             timeout=(5, 5),
         )
