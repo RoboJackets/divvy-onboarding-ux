@@ -100,7 +100,7 @@ emailProviderIcon =
 
 emailProviderName : Dict String String
 emailProviderName =
-    Dict.fromList [ ( "gatech.edu", "Microsoft" ), ( "robojackets.org", "Google" ) ]
+    Dict.fromList [ ( "robojackets.org", "Google" ), ( "gatech.edu", "Microsoft" ) ]
 
 
 statesMap : Dict String String
