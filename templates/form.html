@@ -5,7 +5,7 @@
     const app = Elm.Main.init(
         {
             flags: {
-                serverData: {{ elmModel }},
+                serverData: {{ elm_model | tojson }},
                 localData: localStorage.getItem("formFields"),
             }
         }
