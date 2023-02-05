@@ -26,16 +26,7 @@ import Url.Builder
 import Http exposing (..)
 import Char exposing (isDigit)
 
-main : Program Value Model Msg
-main =
-  Browser.application
-  { init = init
-  , view = view
-  , update = update
-  , subscriptions = subscriptions
-  , onUrlChange = UrlChanged
-  , onUrlRequest = UrlRequest
-  }
+-- REGEX
 
 nameRegex : Regex.Regex
 nameRegex = Maybe.withDefault Regex.never (Regex.fromString "^[a-zA-Z ]+$")
@@ -46,6 +37,8 @@ studentCenterMailboxRegex = Maybe.withDefault Regex.never (Regex.fromString "^\\
 graduateLivingCenterMailboxRegex : Regex.Regex
 graduateLivingCenterMailboxRegex = Maybe.withDefault Regex.never (Regex.fromString "^(apt|apartment) [1-6][0-2][0-9][a-d]$")
 
+-- STRINGS
+
 noBreakSpace : String
 noBreakSpace = String.fromChar '\u{00A0}'
 
@@ -54,6 +47,8 @@ emailFeedbackText = "Please enter a valid email address ending in @gatech.edu or
 
 managerFeedbackText : String
 managerFeedbackText = "Please select your manager"
+
+-- ICONS
 
 googleIcon : Svg msg
 googleIcon = svg [ Svg.Attributes.width "16", Svg.Attributes.height "16", Svg.Attributes.viewBox "0 0 16 16", Svg.Attributes.fill "currentColor", Svg.Attributes.style "top: -0.125em; position: relative;" ] [ path [ d "M15.545 6.558a9.42 9.42 0 0 1 .139 1.626c0 2.434-.87 4.492-2.384 5.885h.002C11.978 15.292 10.158 16 8 16A8 8 0 1 1 8 0a7.689 7.689 0 0 1 5.352 2.082l-2.284 2.284A4.347 4.347 0 0 0 8 3.166c-2.087 0-3.86 1.408-4.492 3.304a4.792 4.792 0 0 0 0 3.063h.003c.635 1.893 2.405 3.301 4.492 3.301 1.078 0 2.004-.276 2.722-.764h-.003a3.702 3.702 0 0 0 1.599-2.431H8v-3.08h7.545z" ] []]
@@ -67,6 +62,8 @@ checkIcon = svg [ Svg.Attributes.width "16", Svg.Attributes.height "16", Svg.Att
 exclamationCircleIcon : Svg msg
 exclamationCircleIcon = svg [ Svg.Attributes.width "16", Svg.Attributes.height "16", Svg.Attributes.viewBox "0 0 16 16", Svg.Attributes.fill "currentColor", Svg.Attributes.style "top: -0.125em; position: relative;"] [ path [ d "M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"] [], path [ d "M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 4.995z"] []]
 
+-- MAPS
+
 emailProviderIcon : Dict String (Svg msg)
 emailProviderIcon = Dict.fromList [("robojackets.org", googleIcon), ("gatech.edu", microsoftIcon)]
 
@@ -76,11 +73,28 @@ emailProviderName = Dict.fromList [("gatech.edu", "Microsoft"), ("robojackets.or
 statesMap : Dict String String
 statesMap = Dict.fromList [("AK", "Alaska"),("AL", "Alabama"),("AR", "Arkansas"),("AZ", "Arizona"),("CA", "California"),("CO", "Colorado"),("CT", "Connecticut"),("DC", "District of Columbia"),("DE", "Delaware"),("FL", "Florida"),("GA", "Georgia"),("HI", "Hawaii"),("IA", "Iowa"),("ID", "Idaho"),("IL", "Illinois"),("IN", "Indiana"),("KS", "Kansas"),("KY", "Kentucky"),("LA", "Louisiana"),("MA", "Massachusetts"),("MD", "Maryland"),("ME", "Maine"),("MI", "Michigan"),("MN", "Minnesota"),("MO", "Missouri"),("MS", "Mississippi"),("MT", "Montana"),("NC", "North Carolina"),("ND", "North Dakota"),("NE", "Nebraska"),("NH", "New Hampshire"),("NJ", "New Jersey"),("NM", "New Mexico"),("NV", "Nevada"),("NY", "New York"),("OH", "Ohio"),("OK", "Oklahoma"),("OR", "Oregon"),("PA", "Pennsylvania"),("RI", "Rhode Island"),("SC", "South Carolina"),("SD", "South Dakota"),("TN", "Tennessee"),("TX", "Texas"),("UT", "Utah"),("VA", "Virginia"),("VT", "Vermont"),("WA", "Washington"),("WI", "Wisconsin"),("WV", "West Virginia"),("WY", "Wyoming")]
 
+-- TYPES
+
 type ShippingOption = UspsFirstClass | FedEx2Day | FedExOvernight
 
 type NextAction = RedirectToEmailVerification | ValidateAddressWithGoogle | SubmitForm | NoOpNextAction
 
 type CampusAddress = StudentCenter | GraduateLivingCenter | NotCampusAddress
+
+type alias AddressComponent =
+  { value : String
+  , types : List String
+  }
+
+type alias GoogleAddressValidation =
+  { addressComplete : Maybe Bool
+  , missingComponentTypes : Maybe (List String)
+  }
+
+type alias NameValidation =
+  { firstNameResult : Result String Bool
+  , lastNameResult : Result String Bool
+  }
 
 type alias Model =
   { firstName : String
@@ -109,129 +123,6 @@ type alias Model =
   , nextAction : NextAction
   }
 
-type alias AddressComponent =
-  { value : String
-  , types : List String
-  }
-
-type alias GoogleAddressValidationVerdict =
-  { addressComplete : Maybe Bool
-  , missingComponentTypes : Maybe (List String)
-  }
-
-init : Value -> Url.Url -> Nav.Key -> ( Model, Cmd Msg )
-init flags url key =
-  ( buildInitialModel flags, Cmd.none )
-
-
-buildInitialModel : Value -> Model
-buildInitialModel value =
-  Model
-    (String.trim (Result.withDefault
-      (Result.withDefault "" (decodeValue (at ["serverData", "firstName"] string) value))
-      (decodeString (field "firstName" string) (Result.withDefault "{}" (decodeValue (field "localData" string) value)))
-    ))
-    (String.trim (Result.withDefault
-      (Result.withDefault "" (decodeValue (at ["serverData", "lastName"] string) value))
-      (decodeString (field "lastName" string) (Result.withDefault "{}" (decodeValue (field "localData" string) value)))
-    ))
-    (String.trim (Result.withDefault
-      (Result.withDefault "" (decodeValue (at ["serverData", "emailAddress"] string) value))
-      (decodeString (field "emailAddress" string) (Result.withDefault "{}" (decodeValue (field "localData" string) value)))
-    ))
-    (
-      ((
-        (String.trim (Result.withDefault "" (decodeString (field "emailAddress" string) (Result.withDefault "{}" (decodeValue (field "localData" string) value))))) ==
-        (String.trim (Result.withDefault "" (decodeValue (at ["serverData", "emailAddress"] string) value)))
-      ) &&
-      (Result.withDefault False (decodeValue (at ["serverData", "emailVerified"] bool) value))) ||
-      ((
-        case (decodeString (field "emailAddress" string) (Result.withDefault "{}" (decodeValue (field "localData" string) value))) of
-          Ok _ ->
-            False
-          Err _ ->
-            True
-      )) && (Result.withDefault False (decodeValue (at ["serverData", "emailVerified"] bool) value))
-    )
-    (Dict.fromList (List.filterMap stringStringTupleToMaybeIntStringTuple (Result.withDefault [] (decodeValue (at ["serverData", "managerOptions"] (keyValuePairs string)) value))))
-    (
-      case decodeString (field "managerId" int) (Result.withDefault "{}" (decodeValue (field "localData" string) value)) of
-        Ok managerId ->
-          Just managerId
-        Err _ ->
-          case decodeValue (at ["serverData", "managerId"] int) value of
-            Ok managerId ->
-              if (Result.withDefault -1 (decodeValue (at ["serverData", "selfId"] int) value)) == managerId then
-                Nothing
-              else
-                Just managerId
-            Err _ ->
-              Nothing
-    )
-    (Result.withDefault -1 (decodeValue (at ["serverData", "selfId"] int) value))
-    (Result.withDefault True (decodeString (field "orderPhysicalCard" bool) (Result.withDefault "{}" (decodeValue (field "localData" string) value))))
-    (case (decodeString (field "shippingOption" string) (Result.withDefault "{}" (decodeValue (field "localData" string) value))) of
-      Ok "FedEx2Day" ->
-        FedEx2Day
-      Ok "FedExOvernight" ->
-        FedExOvernight
-      _ ->
-        UspsFirstClass
-    )
-    (String.trim (Result.withDefault
-      (Result.withDefault "" (decodeValue (at ["serverData", "addressLineOne"] string) value))
-      (decodeString (field "addressLineOne" string) (Result.withDefault "{}" (decodeValue (field "localData" string) value)))
-    ))
-    (String.trim (Result.withDefault
-      (Result.withDefault "" (decodeValue (at ["serverData", "addressLineTwo"] string) value))
-      (decodeString (field "addressLineTwo" string) (Result.withDefault "{}" (decodeValue (field "localData" string) value)))
-    ))
-    (String.trim (Result.withDefault
-      (Result.withDefault "" (decodeValue (at ["serverData", "city"] string) value))
-      (decodeString (field "city" string) (Result.withDefault "{}" (decodeValue (field "localData" string) value)))
-    ))
-    (
-      case (decodeString (field "state" string) (Result.withDefault "{}" (decodeValue (field "localData" string) value))) of
-        Ok state ->
-          if (List.member state (Dict.keys statesMap)) then
-            Just state
-          else
-            Nothing
-        Err _ ->
-          case decodeValue (at ["serverData", "state"] string) value of
-            Ok state ->
-              if (List.member state (Dict.keys statesMap)) then
-                Just state
-              else
-                Nothing
-            Err _ ->
-              Nothing
-    )
-    (String.trim (Result.withDefault
-      (Result.withDefault "" (decodeValue (at ["serverData", "zip"] string) value))
-      (decodeString (field "zip" string) (Result.withDefault "{}" (decodeValue (field "localData" string) value)))
-    ))
-    False
-    Nothing
-    False
-    False
-    False
-    False
-    False
-    False
-    (String.trim (Result.withDefault "" (decodeValue (at ["serverData", "googleMapsApiKey"] string) value)))
-    NoOpNextAction
-
-
-stringStringTupleToMaybeIntStringTuple : (String, String) -> Maybe (Int, String)
-stringStringTupleToMaybeIntStringTuple (first, second) =
-  case String.toInt first of
-    Just intVal ->
-      Just (intVal, second)
-    Nothing ->
-      Nothing
-
-
 type Msg
   = UrlRequest Browser.UrlRequest
   | UrlChanged Url.Url
@@ -257,7 +148,24 @@ type Msg
   | LocalStorageSaved Bool
   | EmailVerificationButtonClicked
   | PlaceChanged Value
-  | GoogleAddressValidationResultReceived (Result Http.Error GoogleAddressValidationVerdict)
+  | GoogleAddressValidationResultReceived (Result Http.Error GoogleAddressValidation)
+
+-- PLUMBING
+
+main : Program Value Model Msg
+main =
+  Browser.application
+  { init = init
+  , view = view
+  , update = update
+  , subscriptions = subscriptions
+  , onUrlChange = UrlChanged
+  , onUrlRequest = UrlRequest
+  }
+
+init : Value -> Url.Url -> Nav.Key -> ( Model, Cmd Msg )
+init flags url key =
+  ( buildInitialModel flags, Cmd.none )
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
@@ -446,14 +354,6 @@ update msg model =
           Err _ ->
             submitForm True
       ) )
-
-nonBlankString : String -> Bool
-nonBlankString value =
-  not (blankString value)
-
-blankString : String -> Bool
-blankString value =
-  (String.isEmpty (String.trim value))
 
 subscriptions : Model -> Sub Msg
 subscriptions _ =
@@ -792,10 +692,7 @@ view model =
       ]
   }
 
-type alias NameValidation =
-  { firstNameResult : Result String Bool
-  , lastNameResult : Result String Bool
-  }
+-- VALIDATION
 
 validateName : String -> String -> NameValidation
 validateName firstName lastName =
@@ -835,14 +732,6 @@ validateEmailAddress emailAddress verified =
         Ok True
     Err _ ->
       Err emailFeedbackText
-
-emailAddressDomain : String -> Maybe String
-emailAddressDomain emailAddress =
-  case Email.parse emailAddress of
-    Ok addressParts ->
-      Just (String.toLower (String.trim (addressParts.domain)))
-    Err _ ->
-      Nothing
 
 validateManager : Maybe Int -> List Int -> Int -> Result String Bool
 validateManager selectedManagerId managerOptions selfId =
@@ -919,88 +808,6 @@ validateZipCode zipCode =
   else
     Err "Please enter exactly 5 digits"
 
-isValid : Result String Bool -> Bool
-isValid validation =
-  case validation of
-    Ok _ ->
-      True
-    Err _ ->
-      False
-
-feedbackText : Result String Bool -> String
-feedbackText validation =
-  case validation of
-    Ok _ ->
-      ""
-    Err text ->
-      text
-
-emailProvider : String -> String
-emailProvider domain =
-  withDefault "unknown" (Dict.get (String.toLower domain) emailProviderName)
-
-managerTupleToHtmlOption : Maybe Int -> Int -> (Int, String) -> Html msg
-managerTupleToHtmlOption selectedManagerId selfId (managerId, managerName) =
-  option [ Html.Attributes.value (String.fromInt managerId), selected (
-                case selectedManagerId of
-                  Just selectedId ->
-                    selectedId == managerId && selectedId /= selfId
-                  Nothing ->
-                    False
-                ), disabled (selfId == managerId) ] [ text managerName ]
-
-stateTupleToHtmlOption : Maybe String -> (String, String) -> Html msg
-stateTupleToHtmlOption selectedState (stateCode, stateName) =
-  option [ Html.Attributes.value stateCode, selected (
-      case selectedState of
-        Just selectedStateCode ->
-          selectedStateCode == stateCode
-        Nothing ->
-          False
-    )] [ text stateName ]
-
-port submitForm : Bool -> Cmd msg
-
-stringifyModel : Model -> String
-stringifyModel model =
-  Json.Encode.encode 0 (Json.Encode.object
-  [ ("firstName", Json.Encode.string (String.trim model.firstName))
-  , ("lastName", Json.Encode.string (String.trim model.lastName))
-  , ("emailAddress", Json.Encode.string (String.trim model.emailAddress))
-  , ("managerId", (
-    case model.managerId of
-      Just managerId ->
-        Json.Encode.int managerId
-      Nothing ->
-        Json.Encode.null
-    ))
-  , ("orderPhysicalCard", Json.Encode.bool model.orderPhysicalCard)
-  , ("shippingOption", (
-    case model.shippingOption of
-      UspsFirstClass ->
-        Json.Encode.string "UspsFirstClass"
-      FedEx2Day ->
-        Json.Encode.string "FedEx2Day"
-      FedExOvernight ->
-        Json.Encode.string "FedExOvernight"
-    ))
-  , ("addressLineOne", Json.Encode.string (String.trim model.addressLineOne))
-  , ("addressLineTwo", Json.Encode.string (String.trim model.addressLineTwo))
-  , ("city", Json.Encode.string (String.trim model.city))
-  , ("state", (
-    case model.state of
-      Just state ->
-        Json.Encode.string state
-      Nothing ->
-        Json.Encode.null
-    ))
-  , ("zip", Json.Encode.string (String.trim model.zip))
-  ])
-
-port saveToLocalStorage : String -> Cmd msg
-
-port localStorageSaved : (Bool -> msg) -> Sub msg
-
 validateModel : Model -> Result String Bool
 validateModel model =
   if not (isValid ((validateName model.firstName model.lastName ).firstNameResult)) then
@@ -1044,7 +851,91 @@ validateModel model =
   else
     Ok True
 
-port placeChanged : (Value -> msg) -> Sub msg
+-- HELPERS
+
+isValid : Result String Bool -> Bool
+isValid validation =
+  case validation of
+    Ok _ ->
+      True
+    Err _ ->
+      False
+
+feedbackText : Result String Bool -> String
+feedbackText validation =
+  case validation of
+    Ok _ ->
+      ""
+    Err text ->
+      text
+
+emailAddressDomain : String -> Maybe String
+emailAddressDomain emailAddress =
+  case Email.parse emailAddress of
+    Ok addressParts ->
+      Just (String.toLower (String.trim (addressParts.domain)))
+    Err _ ->
+      Nothing
+
+emailProvider : String -> String
+emailProvider domain =
+  withDefault "unknown" (Dict.get (String.toLower (String.trim domain)) emailProviderName)
+
+managerTupleToHtmlOption : Maybe Int -> Int -> (Int, String) -> Html msg
+managerTupleToHtmlOption selectedManagerId selfId (managerId, managerName) =
+  option [ Html.Attributes.value (String.fromInt managerId), selected (
+                case selectedManagerId of
+                  Just selectedId ->
+                    selectedId == managerId && selectedId /= selfId
+                  Nothing ->
+                    False
+                ), disabled (selfId == managerId) ] [ text managerName ]
+
+stateTupleToHtmlOption : Maybe String -> (String, String) -> Html msg
+stateTupleToHtmlOption selectedState (stateCode, stateName) =
+  option [ Html.Attributes.value stateCode, selected (
+      case selectedState of
+        Just selectedStateCode ->
+          selectedStateCode == stateCode
+        Nothing ->
+          False
+    )] [ text stateName ]
+
+stringifyModel : Model -> String
+stringifyModel model =
+  Json.Encode.encode 0 (Json.Encode.object
+  [ ("firstName", Json.Encode.string (String.trim model.firstName))
+  , ("lastName", Json.Encode.string (String.trim model.lastName))
+  , ("emailAddress", Json.Encode.string (String.trim model.emailAddress))
+  , ("managerId", (
+    case model.managerId of
+      Just managerId ->
+        Json.Encode.int managerId
+      Nothing ->
+        Json.Encode.null
+    ))
+  , ("orderPhysicalCard", Json.Encode.bool model.orderPhysicalCard)
+  , ("shippingOption", (
+    case model.shippingOption of
+      UspsFirstClass ->
+        Json.Encode.string "UspsFirstClass"
+      FedEx2Day ->
+        Json.Encode.string "FedEx2Day"
+      FedExOvernight ->
+        Json.Encode.string "FedExOvernight"
+    ))
+  , ("addressLineOne", Json.Encode.string (String.trim model.addressLineOne))
+  , ("addressLineTwo", Json.Encode.string (String.trim model.addressLineTwo))
+  , ("city", Json.Encode.string (String.trim model.city))
+  , ("state", (
+    case model.state of
+      Just state ->
+        Json.Encode.string state
+      Nothing ->
+        Json.Encode.null
+    ))
+  , ("zip", Json.Encode.string (String.trim model.zip))
+  ])
 
 keyDecoder : Decoder ( Msg, Bool )
 keyDecoder =
@@ -1078,9 +969,9 @@ addressComponentTypeMatches : String -> AddressComponent -> Bool
 addressComponentTypeMatches desiredType component =
   List.member desiredType component.types
 
-googleAddressValidationResponseDecoder : Decoder GoogleAddressValidationVerdict
+googleAddressValidationResponseDecoder : Decoder GoogleAddressValidation
 googleAddressValidationResponseDecoder =
-  Json.Decode.map2 GoogleAddressValidationVerdict
+  Json.Decode.map2 GoogleAddressValidation
     (maybe (at ["result", "verdict", "addressComplete"] bool))
     (maybe (at ["result", "address", "missingComponentTypes"] (Json.Decode.list string)))
 
@@ -1100,3 +991,127 @@ checkCampusAddress model =
     GraduateLivingCenter
   else
     NotCampusAddress
+
+buildInitialModel : Value -> Model
+buildInitialModel value =
+  Model
+    (String.trim (Result.withDefault
+      (Result.withDefault "" (decodeValue (at ["serverData", "firstName"] string) value))
+      (decodeString (field "firstName" string) (Result.withDefault "{}" (decodeValue (field "localData" string) value)))
+    ))
+    (String.trim (Result.withDefault
+      (Result.withDefault "" (decodeValue (at ["serverData", "lastName"] string) value))
+      (decodeString (field "lastName" string) (Result.withDefault "{}" (decodeValue (field "localData" string) value)))
+    ))
+    (String.trim (Result.withDefault
+      (Result.withDefault "" (decodeValue (at ["serverData", "emailAddress"] string) value))
+      (decodeString (field "emailAddress" string) (Result.withDefault "{}" (decodeValue (field "localData" string) value)))
+    ))
+    (
+      ((
+        (String.trim (Result.withDefault "" (decodeString (field "emailAddress" string) (Result.withDefault "{}" (decodeValue (field "localData" string) value))))) ==
+        (String.trim (Result.withDefault "" (decodeValue (at ["serverData", "emailAddress"] string) value)))
+      ) &&
+      (Result.withDefault False (decodeValue (at ["serverData", "emailVerified"] bool) value))) ||
+      ((
+        case (decodeString (field "emailAddress" string) (Result.withDefault "{}" (decodeValue (field "localData" string) value))) of
+          Ok _ ->
+            False
+          Err _ ->
+            True
+      )) && (Result.withDefault False (decodeValue (at ["serverData", "emailVerified"] bool) value))
+    )
+    (Dict.fromList (List.filterMap stringStringTupleToMaybeIntStringTuple (Result.withDefault [] (decodeValue (at ["serverData", "managerOptions"] (keyValuePairs string)) value))))
+    (
+      case decodeString (field "managerId" int) (Result.withDefault "{}" (decodeValue (field "localData" string) value)) of
+        Ok managerId ->
+          Just managerId
+        Err _ ->
+          case decodeValue (at ["serverData", "managerId"] int) value of
+            Ok managerId ->
+              if (Result.withDefault -1 (decodeValue (at ["serverData", "selfId"] int) value)) == managerId then
+                Nothing
+              else
+                Just managerId
+            Err _ ->
+              Nothing
+    )
+    (Result.withDefault -1 (decodeValue (at ["serverData", "selfId"] int) value))
+    (Result.withDefault True (decodeString (field "orderPhysicalCard" bool) (Result.withDefault "{}" (decodeValue (field "localData" string) value))))
+    (case (decodeString (field "shippingOption" string) (Result.withDefault "{}" (decodeValue (field "localData" string) value))) of
+      Ok "FedEx2Day" ->
+        FedEx2Day
+      Ok "FedExOvernight" ->
+        FedExOvernight
+      _ ->
+        UspsFirstClass
+    )
+    (String.trim (Result.withDefault
+      (Result.withDefault "" (decodeValue (at ["serverData", "addressLineOne"] string) value))
+      (decodeString (field "addressLineOne" string) (Result.withDefault "{}" (decodeValue (field "localData" string) value)))
+    ))
+    (String.trim (Result.withDefault
+      (Result.withDefault "" (decodeValue (at ["serverData", "addressLineTwo"] string) value))
+      (decodeString (field "addressLineTwo" string) (Result.withDefault "{}" (decodeValue (field "localData" string) value)))
+    ))
+    (String.trim (Result.withDefault
+      (Result.withDefault "" (decodeValue (at ["serverData", "city"] string) value))
+      (decodeString (field "city" string) (Result.withDefault "{}" (decodeValue (field "localData" string) value)))
+    ))
+    (
+      case (decodeString (field "state" string) (Result.withDefault "{}" (decodeValue (field "localData" string) value))) of
+        Ok state ->
+          if (List.member state (Dict.keys statesMap)) then
+            Just state
+          else
+            Nothing
+        Err _ ->
+          case decodeValue (at ["serverData", "state"] string) value of
+            Ok state ->
+              if (List.member state (Dict.keys statesMap)) then
+                Just state
+              else
+                Nothing
+            Err _ ->
+              Nothing
+    )
+    (String.trim (Result.withDefault
+      (Result.withDefault "" (decodeValue (at ["serverData", "zip"] string) value))
+      (decodeString (field "zip" string) (Result.withDefault "{}" (decodeValue (field "localData" string) value)))
+    ))
+    False
+    Nothing
+    False
+    False
+    False
+    False
+    False
+    False
+    (String.trim (Result.withDefault "" (decodeValue (at ["serverData", "googleMapsApiKey"] string) value)))
+    NoOpNextAction
+
+stringStringTupleToMaybeIntStringTuple : (String, String) -> Maybe (Int, String)
+stringStringTupleToMaybeIntStringTuple (first, second) =
+  case String.toInt first of
+    Just intVal ->
+      Just (intVal, second)
+    Nothing ->
+      Nothing
+
+nonBlankString : String -> Bool
+nonBlankString value =
+  not (blankString value)
+
+blankString : String -> Bool
+blankString value =
+  (String.isEmpty (String.trim value))
+
+-- PORTS
+
+port submitForm : Bool -> Cmd msg
+
+port saveToLocalStorage : String -> Cmd msg
+
+port localStorageSaved : (Bool -> msg) -> Sub msg
+
+port placeChanged : (Value -> msg) -> Sub msg
