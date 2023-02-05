@@ -130,3 +130,6 @@ dmypy.json
 
 # JetBrains stuff
 .idea/
+
+# Elm stuff
+elm-stuff/
