@@ -57,7 +57,7 @@ noBreakSpace =
 
 emailFeedbackText : String
 emailFeedbackText =
-    "Please enter a valid email address ending in @gatech.edu or @robojackets.org"
+    "Please enter a valid email address ending in gatech.edu or robojackets.org"
 
 
 managerFeedbackText : String
@@ -1080,14 +1080,19 @@ validateEmailAddress emailAddress verified =
     else
         case Email.parse emailAddress of
             Ok addressParts ->
-                if not (List.member (String.toLower addressParts.domain) (Dict.keys emailProviderName)) then
-                    Err emailFeedbackText
+                case emailAddressDomain addressParts.domain of
+                    Just domain ->
+                        if not (List.member domain (Dict.keys emailProviderName)) then
+                            Err emailFeedbackText
 
-                else if not verified then
-                    Err ("Please verify your email address with " ++ emailProvider (String.toLower addressParts.domain))
+                        else if not verified then
+                            Err ("Please verify your email address with " ++ emailProvider domain)
 
-                else
-                    Ok True
+                        else
+                            Ok True
+
+                    Nothing ->
+                        Err emailFeedbackText
 
             Err _ ->
                 Err emailFeedbackText
@@ -1301,7 +1306,15 @@ emailAddressDomain : String -> Maybe String
 emailAddressDomain emailAddress =
     case Email.parse emailAddress of
         Ok addressParts ->
-            Just (String.toLower (String.trim addressParts.domain))
+            case take 2 (List.reverse (String.split "." (String.toLower (String.trim addressParts.domain)))) of
+                [ "edu", "gatech" ] ->
+                    Just "gatech.edu"
+
+                [ "org", "robojackets" ] ->
+                    Just "robojackets.org"
+
+                _ ->
+                    Nothing
 
         Err _ ->
             Nothing
