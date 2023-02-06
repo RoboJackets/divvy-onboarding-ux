@@ -1,17 +1,7 @@
 {% extends "layout.html" %}
 {% block body %}
-    <script src="{{ url_for('static', filename='app.js') }}"></script>
     <script>
-    const app = Elm.Main.init(
-        {
-            flags: {
-                serverData: {{ elm_model | tojson }},
-                localData: localStorage.getItem("formFields"),
-            }
-        }
-    );
-
-    initializePorts();
+    window.serverData = {{ elm_model | tojson }}
     </script>
-    <script async src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_api_key }}&libraries=places&callback=initializeAutocomplete"></script>
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
 {% endblock %}

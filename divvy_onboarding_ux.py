@@ -130,20 +130,6 @@ def index() -> Any:
             "zip": session["zip_code"],
             "googleMapsApiKey": app.config["GOOGLE_MAPS_FRONTEND_API_KEY"],
         },
-        sentry_init={
-            "dsn": getenv("SENTRY_DSN"),
-            "environment": getenv("SENTRY_ENVIRONMENT"),
-            "release": getenv("SENTRY_RELEASE"),
-            "initialScope": {
-                "user": {
-                    "id": session["user_id"],
-                    "username": session["username"],
-                    "email": session["email_address"],
-                    "ip_address": request.remote_addr,
-                }
-            }
-        },
-        trace_id=sentry_sdk.Hub.current.scope.span.trace_id,
         google_maps_api_key=app.config["GOOGLE_MAPS_FRONTEND_API_KEY"],
     )
 

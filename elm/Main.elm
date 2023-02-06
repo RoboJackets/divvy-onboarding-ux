@@ -542,6 +542,9 @@ update msg model =
                     if Maybe.withDefault False verdict.addressComplete then
                         submitForm True
 
+                    else if List.member "subpremise" (Maybe.withDefault [] verdict.missingComponentTypes) then
+                        Task.attempt (\_ -> NoOpMsg) (focus "address_line_two")
+
                     else
                         Cmd.none
 

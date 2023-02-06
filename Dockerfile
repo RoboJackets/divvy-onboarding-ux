@@ -2,6 +2,21 @@
 
 ARG base_image=python:3.10-slim-bullseye
 
+FROM node:19 as frontend
+
+RUN npm install -g npm@latest
+
+COPY --link package.json package-lock.json elm.json /app/
+COPY --link elm/ /app/elm/
+COPY --link js/ /app/js/
+COPY --link static/ /app/static/
+
+WORKDIR /app/
+
+RUN set -eux && \
+    npm ci --no-progress && \
+    npm run build
+
 FROM ${base_image}
 
 ENV DEBIAN_FRONTEND=noninteractive \
@@ -21,11 +36,11 @@ RUN set -eux && \
 
 WORKDIR /app/
 
-COPY --link --chown=uwsgi:uwsgi /static/ /app/static/
+COPY --chown=uwsgi:uwsgi --from=frontend /app/static/ /app/static/
 
-COPY --link --chown=uwsgi:uwsgi /templates/ /app/templates/
+COPY --chown=uwsgi:uwsgi /templates/ /app/templates/
 
-COPY --link --chown=uwsgi:uwsgi /divvy_onboarding_ux.py /pyproject.toml /poetry.lock /app/
+COPY --chown=uwsgi:uwsgi /divvy_onboarding_ux.py /pyproject.toml /poetry.lock /app/
 
 RUN set -eux && \
     POETRY_VIRTUALENVS_CREATE=false poetry install --only main --no-root --no-interaction --no-ansi && \
