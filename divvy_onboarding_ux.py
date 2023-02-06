@@ -374,17 +374,17 @@ def verify_email() -> Any:
     if session["user_state"] != "eligible":
         raise Unauthorized("Not eligible")
 
-    if request.args["emailAddress"].endswith("@robojackets.org"):
+    if request.args["emailAddress"].endswith("robojackets.org"):
         return oauth.google.authorize_redirect(
             url_for("verify_google_complete", _external=True),
-            login_hint=session["email_address"],
+            login_hint=request.args["emailAddress"],
             hd="robojackets.org",
         )
 
-    if request.args["emailAddress"].endswith("@gatech.edu"):
+    if request.args["emailAddress"].endswith("gatech.edu"):
         return oauth.microsoft.authorize_redirect(
             url_for("verify_microsoft_complete", _external=True),
-            login_hint=session["email_address"],
+            login_hint=request.args["emailAddress"],
             hd="gatech.edu",
         )
 
