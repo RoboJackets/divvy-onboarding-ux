@@ -1058,19 +1058,23 @@ validateName firstName lastName =
 
 validateEmailAddress : String -> Bool -> Result String Bool
 validateEmailAddress emailAddress verified =
-    case Email.parse emailAddress of
-        Ok addressParts ->
-            if not (List.member (String.toLower addressParts.domain) (Dict.keys emailProviderName)) then
+    if verified then
+        Ok True
+
+    else
+        case Email.parse emailAddress of
+            Ok addressParts ->
+                if not (List.member (String.toLower addressParts.domain) (Dict.keys emailProviderName)) then
+                    Err emailFeedbackText
+
+                else if not verified then
+                    Err ("Please verify your email address with " ++ emailProvider (String.toLower addressParts.domain))
+
+                else
+                    Ok True
+
+            Err _ ->
                 Err emailFeedbackText
-
-            else if not verified then
-                Err ("Please verify your email address with " ++ emailProvider (String.toLower addressParts.domain))
-
-            else
-                Ok True
-
-        Err _ ->
-            Err emailFeedbackText
 
 
 validateManager : Maybe Int -> List Int -> Int -> Result String Bool
