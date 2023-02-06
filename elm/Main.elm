@@ -1479,20 +1479,7 @@ buildInitialModel value =
                     (decodeString (field "emailAddress" string) (Result.withDefault "{}" (decodeValue (field "localData" string) value)))
                 )
         )
-        (((String.trim (Result.withDefault "" (decodeString (field "emailAddress" string) (Result.withDefault "{}" (decodeValue (field "localData" string) value))))
-            == String.trim (Result.withDefault "" (decodeValue (at [ "serverData", "emailAddress" ] string) value))
-          )
-            && Result.withDefault False (decodeValue (at [ "serverData", "emailVerified" ] bool) value)
-         )
-            || (case decodeString (field "emailAddress" string) (Result.withDefault "{}" (decodeValue (field "localData" string) value)) of
-                    Ok _ ->
-                        False
-
-                    Err _ ->
-                        True
-               )
-            && Result.withDefault False (decodeValue (at [ "serverData", "emailVerified" ] bool) value)
-        )
+        (Result.withDefault False (decodeValue (at [ "serverData", "emailVerified" ] bool) value))
         (Dict.fromList (List.filterMap stringStringTupleToMaybeIntStringTuple (Result.withDefault [] (decodeValue (at [ "serverData", "managerOptions" ] (keyValuePairs string)) value))))
         (case decodeString (field "managerId" int) (Result.withDefault "{}" (decodeValue (field "localData" string) value)) of
             Ok managerId ->
