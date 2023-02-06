@@ -1,7 +1,6 @@
 """
 Overengineered web form to facilitate onboarding users to Divvy
 """
-from os import getenv
 from re import fullmatch
 from typing import Any, Dict, Union
 
@@ -23,12 +22,15 @@ from werkzeug.exceptions import BadRequest, InternalServerError, Unauthorized
 
 
 def traces_sampler(sampling_context: Dict[str, Dict[str, str]]) -> bool:
+    """
+    Ignore ping events, sample all other events
+    """
     try:
-        request_uri = sampling_context['wsgi_environ']['REQUEST_URI']
+        request_uri = sampling_context["wsgi_environ"]["REQUEST_URI"]
     except KeyError:
         return False
 
-    return request_uri != '/ping'
+    return request_uri != "/ping"
 
 
 sentry_sdk.init(
@@ -378,14 +380,15 @@ def verify_email() -> Any:
             login_hint=session["email_address"],
             hd="robojackets.org",
         )
-    elif request.args["emailAddress"].endswith("@gatech.edu"):
+
+    if request.args["emailAddress"].endswith("@gatech.edu"):
         return oauth.microsoft.authorize_redirect(
             url_for("verify_microsoft_complete", _external=True),
             login_hint=session["email_address"],
             hd="gatech.edu",
         )
-    else:
-        raise BadRequest("Unexpected email address domain")
+
+    raise BadRequest("Unexpected email address domain")
 
 
 @app.get("/verify-email/google/complete")
