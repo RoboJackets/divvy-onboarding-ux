@@ -223,7 +223,9 @@ main =
 
 init : Value -> Url.Url -> Nav.Key -> ( Model, Cmd Msg )
 init flags url key =
-    ( buildInitialModel flags, Cmd.none )
+    ( buildInitialModel flags
+    , initializeAutocomplete (String.trim (Result.withDefault "" (decodeValue (at [ "serverData", "googleMapsApiKey" ] string) flags)))
+    )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -1593,6 +1595,9 @@ blankString value =
 
 
 port submitForm : Bool -> Cmd msg
+
+
+port initializeAutocomplete : String -> Cmd msg
 
 
 port saveToLocalStorage : String -> Cmd msg
