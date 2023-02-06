@@ -121,7 +121,7 @@ def index() -> Any:
             "emailAddress": session["email_address"],
             "emailVerified": session["email_verified"],
             "managerId": session["manager_id"],
-            "managerOptions": dict(sorted(managers.items(), key=lambda item: item[1])),
+            "managerOptions": managers,
             "selfId": session["user_id"],
             "addressLineOne": session["address_line_one"],
             "addressLineTwo": session["address_line_two"],
