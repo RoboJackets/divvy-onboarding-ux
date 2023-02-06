@@ -492,8 +492,24 @@ update msg model =
                 , city = String.trim (getAddressComponent (decodePlaceChanged value) "locality")
                 , state = Just (String.trim (getAddressComponent (decodePlaceChanged value) "administrative_area_level_1"))
                 , zip = String.trim (getAddressComponent (decodePlaceChanged value) "postal_code")
+                , nextAction = NoOpNextAction
               }
-            , Task.attempt (\_ -> NoOpMsg) (focus "address_line_two")
+            , Cmd.batch
+                [ Task.attempt (\_ -> NoOpMsg) (focus "address_line_two")
+                , saveToLocalStorage
+                    (stringifyModel
+                        { model
+                            | addressLineOne =
+                                String.trim (getAddressComponent (decodePlaceChanged value) "street_number")
+                                    ++ " "
+                                    ++ String.trim (getAddressComponent (decodePlaceChanged value) "route")
+                            , addressLineTwo = String.trim (getAddressComponent (decodePlaceChanged value) "subpremise")
+                            , city = String.trim (getAddressComponent (decodePlaceChanged value) "locality")
+                            , state = Just (String.trim (getAddressComponent (decodePlaceChanged value) "administrative_area_level_1"))
+                            , zip = String.trim (getAddressComponent (decodePlaceChanged value) "postal_code")
+                        }
+                    )
+                ]
             )
 
         GoogleAddressValidationResultReceived result ->
