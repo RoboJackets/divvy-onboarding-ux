@@ -1468,7 +1468,7 @@ buildInitialModel value =
         (if Result.withDefault False (decodeValue (at [ "serverData", "emailVerified" ] bool) value) then
             String.trim
                 (Result.withDefault
-                    (Result.withDefault "" (decodeString (field "emailAddress" string) (Result.withDefault "{}" (decodeValue (field "localData" string) value))))
+                    ""
                     (decodeValue (at [ "serverData", "emailAddress" ] string) value)
                 )
 
