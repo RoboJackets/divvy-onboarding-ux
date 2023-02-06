@@ -1080,7 +1080,7 @@ validateEmailAddress emailAddress verified =
     else
         case Email.parse emailAddress of
             Ok addressParts ->
-                case emailAddressDomain addressParts.domain of
+                case getSecondLevelDomain addressParts.domain of
                     Just domain ->
                         if not (List.member domain (Dict.keys emailProviderName)) then
                             Err emailFeedbackText
@@ -1306,17 +1306,22 @@ emailAddressDomain : String -> Maybe String
 emailAddressDomain emailAddress =
     case Email.parse emailAddress of
         Ok addressParts ->
-            case take 2 (List.reverse (String.split "." (String.toLower (String.trim addressParts.domain)))) of
-                [ "edu", "gatech" ] ->
-                    Just "gatech.edu"
-
-                [ "org", "robojackets" ] ->
-                    Just "robojackets.org"
-
-                _ ->
-                    Nothing
+            getSecondLevelDomain addressParts.domain
 
         Err _ ->
+            Nothing
+
+
+getSecondLevelDomain : String -> Maybe String
+getSecondLevelDomain domain =
+    case take 2 (List.reverse (String.split "." (String.toLower (String.trim domain)))) of
+        [ "edu", "gatech" ] ->
+            Just "gatech.edu"
+
+        [ "org", "robojackets" ] ->
+            Just "robojackets.org"
+
+        _ ->
             Nothing
 
 
