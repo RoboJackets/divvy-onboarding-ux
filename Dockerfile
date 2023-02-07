@@ -1,6 +1,6 @@
 # syntax = docker/dockerfile:1.4
 
-ARG base_image=python:3.10-slim-bullseye
+ARG base_image=python:3.11-slim-bullseye
 
 FROM node:19 as frontend
 
