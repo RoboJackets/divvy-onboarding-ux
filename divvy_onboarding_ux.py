@@ -20,13 +20,26 @@ from sentry_sdk.integrations.pure_eval import PureEvalIntegration
 
 from werkzeug.exceptions import BadRequest, InternalServerError, Unauthorized
 
+
+def traces_sampler(sampling_context: Dict[str, Dict[str, str]]) -> bool:
+    """
+    Ignore ping events, sample all other events
+    """
+    try:
+        request_uri = sampling_context["wsgi_environ"]["REQUEST_URI"]
+    except KeyError:
+        return False
+
+    return request_uri != "/ping"
+
+
 sentry_sdk.init(
     debug=get_debug_flag(),
     integrations=[
         FlaskIntegration(),
         PureEvalIntegration(),
     ],
-    traces_sample_rate=1.0,
+    traces_sampler=traces_sampler,
     attach_stacktrace=True,
     request_bodies="always",
     in_app_include=[
@@ -53,60 +66,6 @@ oauth.register(
     server_metadata_url=app.config["MICROSOFT_METADATA_URL"],
     client_kwargs={"scope": "openid email"},
 )
-
-states = {
-    "AK": "Alaska",
-    "AL": "Alabama",
-    "AR": "Arkansas",
-    "AZ": "Arizona",
-    "CA": "California",
-    "CO": "Colorado",
-    "CT": "Connecticut",
-    "DC": "District of Columbia",
-    "DE": "Delaware",
-    "FL": "Florida",
-    "GA": "Georgia",
-    "HI": "Hawaii",
-    "IA": "Iowa",
-    "ID": "Idaho",
-    "IL": "Illinois",
-    "IN": "Indiana",
-    "KS": "Kansas",
-    "KY": "Kentucky",
-    "LA": "Louisiana",
-    "MA": "Massachusetts",
-    "MD": "Maryland",
-    "ME": "Maine",
-    "MI": "Michigan",
-    "MN": "Minnesota",
-    "MO": "Missouri",
-    "MS": "Mississippi",
-    "MT": "Montana",
-    "NC": "North Carolina",
-    "ND": "North Dakota",
-    "NE": "Nebraska",
-    "NH": "New Hampshire",
-    "NJ": "New Jersey",
-    "NM": "New Mexico",
-    "NV": "Nevada",
-    "NY": "New York",
-    "OH": "Ohio",
-    "OK": "Oklahoma",
-    "OR": "Oregon",
-    "PA": "Pennsylvania",
-    "RI": "Rhode Island",
-    "SC": "South Carolina",
-    "SD": "South Dakota",
-    "TN": "Tennessee",
-    "TX": "Texas",
-    "UT": "Utah",
-    "VA": "Virginia",
-    "VT": "Vermont",
-    "WA": "Washington",
-    "WI": "Wisconsin",
-    "WV": "West Virginia",
-    "WY": "Wyoming",
-}
 
 
 @app.get("/")
@@ -137,16 +96,6 @@ def index() -> Any:
     if session["user_state"] == "requested":
         return render_template("submitted.html")
 
-    email_provider = None
-    email_ready_to_verify = False
-
-    if session["email_address"].endswith("@gatech.edu"):
-        email_provider = "microsoft"
-        email_ready_to_verify = True
-    elif session["email_address"].endswith("@robojackets.org"):
-        email_provider = "google"
-        email_ready_to_verify = True
-
     apiary_managers_response = get(
         url=app.config["APIARY_URL"] + "/api/v1/users/managers",
         headers={
@@ -168,22 +117,21 @@ def index() -> Any:
 
     return render_template(
         "form.html",
-        first_name=session["first_name"],
-        last_name=session["last_name"],
-        email_address=session["email_address"],
-        email_provider=email_provider,
-        email_verified=session["email_verified"],
-        email_ready_to_verify=email_ready_to_verify,
-        manager_id=session["manager_id"],
-        managers=dict(sorted(managers.items(), key=lambda item: item[1])),  # type: ignore
-        order_physical_card=session["order_physical_card"],
-        shipping_option=session["shipping_option"],
-        address_line_one=session["address_line_one"],
-        address_line_two=session["address_line_two"],
-        state=session["address_state"],
-        city=session["city"],
-        zip_code=session["zip_code"],
-        states=states,
+        elm_model={
+            "firstName": session["first_name"],
+            "lastName": session["last_name"],
+            "emailAddress": session["email_address"],
+            "emailVerified": session["email_verified"],
+            "managerId": session["manager_id"],
+            "managerOptions": managers,
+            "selfId": session["user_id"],
+            "addressLineOne": session["address_line_one"],
+            "addressLineTwo": session["address_line_two"],
+            "city": session["city"],
+            "state": session["address_state"],
+            "zip": session["zip_code"],
+            "googleMapsApiKey": app.config["GOOGLE_MAPS_FRONTEND_API_KEY"],
+        },
         google_maps_api_key=app.config["GOOGLE_MAPS_FRONTEND_API_KEY"],
     )
 
@@ -202,8 +150,6 @@ def login() -> Any:  # pylint: disable=too-many-branches,too-many-statements
     session["username"] = username
     session["first_name"] = userinfo["given_name"]
     session["last_name"] = userinfo["family_name"]
-    session["order_physical_card"] = True
-    session["shipping_option"] = "standard"
     session["address_line_one"] = ""
     session["address_line_two"] = ""
     session["city"] = ""
@@ -281,6 +227,8 @@ def login() -> Any:  # pylint: disable=too-many-branches,too-many-statements
                 session["manager_id"] = apiary_user["manager"]["id"]
             else:
                 session["manager_id"] = None
+        else:
+            raise InternalServerError("Unable to retrieve user information from Apiary")
 
     if session["user_state"] == "eligible":  # pylint: disable=too-many-nested-blocks
         ldap = Connection(
@@ -406,10 +354,10 @@ def login() -> Any:  # pylint: disable=too-many-branches,too-many-statements
     return redirect(url_for("index"))
 
 
-@app.get("/verify-email/google")
-def verify_google_redirect() -> Any:
+@app.get("/verify-email")
+def verify_email() -> Any:
     """
-    Redirects user to Google for email address verification
+    Redirects user to mailbox provider for email address verification
     """
     if "user_state" not in session:
         raise Unauthorized("Not logged in")
@@ -426,11 +374,21 @@ def verify_google_redirect() -> Any:
     if session["user_state"] != "eligible":
         raise Unauthorized("Not eligible")
 
-    return oauth.google.authorize_redirect(
-        url_for("verify_google_complete", _external=True),
-        login_hint=session["email_address"],
-        hd="robojackets.org",
-    )
+    if request.args["emailAddress"].endswith("robojackets.org"):
+        return oauth.google.authorize_redirect(
+            url_for("verify_google_complete", _external=True),
+            login_hint=request.args["emailAddress"],
+            hd="robojackets.org",
+        )
+
+    if request.args["emailAddress"].endswith("gatech.edu"):
+        return oauth.microsoft.authorize_redirect(
+            url_for("verify_microsoft_complete", _external=True),
+            login_hint=request.args["emailAddress"],
+            hd="gatech.edu",
+        )
+
+    raise BadRequest("Unexpected email address domain")
 
 
 @app.get("/verify-email/google/complete")
@@ -460,37 +418,10 @@ def verify_google_complete() -> Response:
     return redirect(url_for("index"))
 
 
-@app.get("/verify-email/microsoft")
-def verify_microsoft_redirect() -> Any:
-    """
-    Redirects user to Microsoft for email address verification
-    """
-    if "user_state" not in session:
-        raise Unauthorized("Not logged in")
-
-    set_user(
-        {
-            "id": session["user_id"],
-            "username": session["username"],
-            "email": session["email_address"],
-            "ip_address": request.remote_addr,
-        }
-    )
-
-    if session["user_state"] != "eligible":
-        raise Unauthorized("Not eligible")
-
-    return oauth.microsoft.authorize_redirect(
-        url_for("verify_microsoft_complete", _external=True),
-        login_hint=session["email_address"],
-        hd="gatech.edu",
-    )
-
-
 @app.get("/verify-email/microsoft/complete")
 def verify_microsoft_complete() -> Response:
     """
-    Handles the return from Google and updates session appropriately
+    Handles the return from Microsoft and updates session appropriately
     """
     if "user_state" not in session:
         raise Unauthorized("Not logged in")
@@ -511,42 +442,6 @@ def verify_microsoft_complete() -> Response:
     session["email_verified"] = True
 
     return redirect(url_for("index"))
-
-
-@app.post("/save")
-def save() -> Dict[str, str]:
-    """
-    Save a draft of the form (triggered on field change)
-    """
-    if "user_state" not in session:
-        raise Unauthorized("Not logged in")
-
-    set_user(
-        {
-            "id": session["user_id"],
-            "username": session["username"],
-            "email": session["email_address"],
-            "ip_address": request.remote_addr,
-        }
-    )
-
-    if session["user_state"] != "eligible":
-        raise Unauthorized("Not eligible")
-
-    session["first_name"] = request.json["first_name"]  # type: ignore
-    session["last_name"] = request.json["last_name"]  # type: ignore
-    if session["email_address"] != request.json["email_address"]:  # type: ignore
-        session["email_verified"] = False
-    session["email_address"] = request.json["email_address"]  # type: ignore
-    session["manager_id"] = None if request.json["manager"] == "" else int(request.json["manager"])  # type: ignore  # noqa: E501
-    session["order_physical_card"] = request.json["order_physical_card"]  # type: ignore
-    session["shipping_option"] = request.json["shipping_option"]  # type: ignore
-    session["address_line_one"] = request.json["address_line_one"]  # type: ignore
-    session["address_line_two"] = request.json["address_line_two"]  # type: ignore
-    session["city"] = request.json["city"]  # type: ignore
-    session["address_state"] = request.json["state"]  # type: ignore
-    session["zip_code"] = request.json["zip_code"]  # type: ignore
-    return {"status": "ok"}
 
 
 @app.post("/")
