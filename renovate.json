@@ -13,5 +13,5 @@
     },
     "rangeStrategy": "pin",
     "timezone": "America/New_York",
-    "schedule": ["before 4pm every weekday"]
+    "schedule": ["10am through 4pm every weekday"]
 }
