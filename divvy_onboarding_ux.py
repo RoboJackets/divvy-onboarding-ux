@@ -414,7 +414,7 @@ def verify_google_complete() -> Response:
     session["email_address"] = userinfo["email"]
     session["email_verified"] = True
 
-    return redirect(url_for("index"))
+    return redirect(url_for("index"))  # type: ignore
 
 
 @app.get("/verify-email/microsoft/complete")
@@ -440,7 +440,7 @@ def verify_microsoft_complete() -> Response:
     session["email_address"] = userinfo["email"]
     session["email_verified"] = True
 
-    return redirect(url_for("index"))
+    return redirect(url_for("index"))  # type: ignore
 
 
 @app.post("/")
