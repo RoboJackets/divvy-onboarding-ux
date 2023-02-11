@@ -293,7 +293,6 @@ def login() -> Any:  # pylint: disable=too-many-branches,too-many-statements
                     and "address" in address_validation_json["result"]
                     and "postalAddress" in address_validation_json["result"]["address"]
                 ):
-
                     if (
                         "postalCode"
                         in address_validation_json["result"]["address"]["postalAddress"]
