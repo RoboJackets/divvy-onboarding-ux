@@ -131,6 +131,11 @@ type CampusAddress
     | NotCampusAddress
 
 
+type ValidationResult
+    = Valid
+    | Invalid String
+
+
 type alias AddressComponent =
     { value : String
     , types : List String
@@ -144,8 +149,8 @@ type alias GoogleAddressValidation =
 
 
 type alias NameValidation =
-    { firstNameResult : Result String Bool
-    , lastNameResult : Result String Bool
+    { firstNameResult : ValidationResult
+    , lastNameResult : ValidationResult
     }
 
 
@@ -247,10 +252,10 @@ update msg model =
                 | showValidation = True
                 , nextAction =
                     case validateModel model of
-                        Err _ ->
+                        Invalid _ ->
                             NoOpNextAction
 
-                        Ok _ ->
+                        Valid ->
                             case checkCampusAddress model of
                                 StudentCenter ->
                                     SubmitForm
@@ -262,10 +267,10 @@ update msg model =
                                     ValidateAddressWithGoogle
               }
             , case validateModel model of
-                Err fieldId ->
+                Invalid fieldId ->
                     Task.attempt (\_ -> NoOpMsg) (focus fieldId)
 
-                Ok _ ->
+                Valid ->
                     saveToLocalStorage (stringifyModel model)
             )
 
@@ -1041,105 +1046,105 @@ validateName : String -> String -> NameValidation
 validateName firstName lastName =
     { firstNameResult =
         if blankString firstName then
-            Err "Please enter your first name"
+            Invalid "Please enter your first name"
 
         else if String.length (String.trim firstName) > 19 then
-            Err "Your first name may be a maximum of 19 characters"
+            Invalid "Your first name may be a maximum of 19 characters"
 
         else if not (Regex.contains nameRegex firstName) then
-            Err "Your first name may only contain letters and spaces"
+            Invalid "Your first name may only contain letters and spaces"
 
         else if String.length (String.trim firstName) + String.length (String.trim lastName) > 20 then
-            Err "Your first and last name combined may be a maximum of 20 characters"
+            Invalid "Your first and last name combined may be a maximum of 20 characters"
 
         else
-            Ok True
+            Valid
     , lastNameResult =
         if blankString lastName then
-            Err "Please enter your last name"
+            Invalid "Please enter your last name"
 
         else if String.length (String.trim lastName) > 19 then
-            Err "Your last name may be a maximum of 19 characters"
+            Invalid "Your last name may be a maximum of 19 characters"
 
         else if not (Regex.contains nameRegex lastName) then
-            Err "Your last name may only contain letters and spaces"
+            Invalid "Your last name may only contain letters and spaces"
 
         else if String.length (String.trim firstName) + String.length (String.trim lastName) > 20 then
-            Err "Your first and last name combined may be a maximum of 20 characters"
+            Invalid "Your first and last name combined may be a maximum of 20 characters"
 
         else
-            Ok True
+            Valid
     }
 
 
-validateEmailAddress : String -> Bool -> Result String Bool
+validateEmailAddress : String -> Bool -> ValidationResult
 validateEmailAddress emailAddress verified =
     case Email.parse emailAddress of
         Ok addressParts ->
             case getSecondLevelDomain addressParts.domain of
                 Just domain ->
                     if not (List.member domain (Dict.keys emailProviderName)) then
-                        Err emailFeedbackText
+                        Invalid emailFeedbackText
 
                     else if not verified then
-                        Err ("Please verify your email address with " ++ emailProvider domain)
+                        Invalid ("Please verify your email address with " ++ emailProvider domain)
 
                     else
-                        Ok True
+                        Valid
 
                 Nothing ->
-                    Err emailFeedbackText
+                    Invalid emailFeedbackText
 
         Err _ ->
-            Err emailFeedbackText
+            Invalid emailFeedbackText
 
 
-validateManager : Maybe Int -> List Int -> Int -> Result String Bool
+validateManager : Maybe Int -> List Int -> Int -> ValidationResult
 validateManager selectedManagerId managerOptions selfId =
     case selectedManagerId of
         Just managerId ->
             if managerId == selfId then
-                Err managerFeedbackText
+                Invalid managerFeedbackText
 
             else if List.member managerId managerOptions then
-                Ok True
+                Valid
 
             else
-                Err managerFeedbackText
+                Invalid managerFeedbackText
 
         Nothing ->
-            Err managerFeedbackText
+            Invalid managerFeedbackText
 
 
-validateAddressLineOne : String -> Result String Bool
+validateAddressLineOne : String -> ValidationResult
 validateAddressLineOne addressLineOne =
     if blankString addressLineOne then
-        Err "Please enter your street address"
+        Invalid "Please enter your street address"
 
     else if String.length (String.trim addressLineOne) > 100 then
-        Err "Your street address may be a maximum of 100 characters"
+        Invalid "Your street address may be a maximum of 100 characters"
 
     else
-        Ok True
+        Valid
 
 
-validateAddressLineOneGoogleResult : Maybe Bool -> Result String Bool
+validateAddressLineOneGoogleResult : Maybe Bool -> ValidationResult
 validateAddressLineOneGoogleResult maybeIsValid =
     case maybeIsValid of
         Just False ->
-            Err "This doesn't appear to be a valid address"
+            Invalid "This doesn't appear to be a valid address"
 
         _ ->
-            Ok True
+            Valid
 
 
-validateAddressLineTwo : String -> Bool -> CampusAddress -> Result String Bool
+validateAddressLineTwo : String -> Bool -> CampusAddress -> ValidationResult
 validateAddressLineTwo addressLineTwo required campusAddress =
     if String.length (String.trim addressLineTwo) > 100 then
-        Err "Your second address line may be a maximum of 100 characters"
+        Invalid "Your second address line may be a maximum of 100 characters"
 
     else if blankString addressLineTwo && (required || campusAddress /= NotCampusAddress) then
-        Err
+        Invalid
             ("This address requires "
                 ++ (case campusAddress of
                         StudentCenter ->
@@ -1159,63 +1164,63 @@ validateAddressLineTwo addressLineTwo required campusAddress =
             == StudentCenter
             && not (Regex.contains studentCenterMailboxRegex (String.trim (String.toLower addressLineTwo)))
     then
-        Err "This doesn't appear to be a valid mailbox number"
+        Invalid "This doesn't appear to be a valid mailbox number"
 
     else if
         campusAddress
             == GraduateLivingCenter
             && not (Regex.contains graduateLivingCenterMailboxRegex (String.trim (String.toLower addressLineTwo)))
     then
-        Err "This doesn't appear to be a valid apartment number"
+        Invalid "This doesn't appear to be a valid apartment number"
 
     else
-        Ok True
+        Valid
 
 
-validateCity : String -> Result String Bool
+validateCity : String -> ValidationResult
 validateCity city =
     if blankString city then
-        Err "Please enter your city"
+        Invalid "Please enter your city"
 
     else if String.length (String.trim city) > 40 then
-        Err "Your city may be a maximum of 40 characters"
+        Invalid "Your city may be a maximum of 40 characters"
 
     else
-        Ok True
+        Valid
 
 
-validateState : Maybe String -> Result String Bool
+validateState : Maybe String -> ValidationResult
 validateState selectedState =
     case selectedState of
         Just _ ->
-            Ok True
+            Valid
 
         Nothing ->
-            Err "Please select your state"
+            Invalid "Please select your state"
 
 
-validateZipCode : String -> Result String Bool
+validateZipCode : String -> ValidationResult
 validateZipCode zipCode =
     if String.length zipCode == 5 && String.all isDigit zipCode then
-        Ok True
+        Valid
 
     else
-        Err "Please enter exactly 5 digits"
+        Invalid "Please enter exactly 5 digits"
 
 
-validateModel : Model -> Result String Bool
+validateModel : Model -> ValidationResult
 validateModel model =
     if not (isValid (validateName model.firstName model.lastName).firstNameResult) then
-        Err "first_name"
+        Invalid "first_name"
 
     else if not (isValid (validateName model.firstName model.lastName).lastNameResult) then
-        Err "last_name"
+        Invalid "last_name"
 
     else if not (isValid (validateEmailAddress model.emailAddress True)) then
-        Err "email_address"
+        Invalid "email_address"
 
     else if not model.emailVerified then
-        Err "email_verification_button"
+        Invalid "email_verification_button"
 
     else if
         case model.managerId of
@@ -1225,10 +1230,10 @@ validateModel model =
             Nothing ->
                 True
     then
-        Err "manager"
+        Invalid "manager"
 
     else if model.orderPhysicalCard && not (isValid (validateAddressLineOne model.addressLineOne)) then
-        Err "address_line_one"
+        Invalid "address_line_one"
 
     else if
         model.orderPhysicalCard
@@ -1241,10 +1246,10 @@ validateModel model =
                     )
                 )
     then
-        Err "address_line_two"
+        Invalid "address_line_two"
 
     else if model.orderPhysicalCard && not (isValid (validateCity model.city)) then
-        Err "city"
+        Invalid "city"
 
     else if
         model.orderPhysicalCard
@@ -1256,45 +1261,45 @@ validateModel model =
                         True
                )
     then
-        Err "state"
+        Invalid "state"
 
     else if model.orderPhysicalCard && not (isValid (validateZipCode model.zip)) then
-        Err "zip_code"
+        Invalid "zip_code"
 
     else if not model.acknowledgedCardPolicy then
-        Err "corporate_card_policy"
+        Invalid "corporate_card_policy"
 
     else if not model.acknowledgedReimbursementPolicy then
-        Err "reimbursement_policy"
+        Invalid "reimbursement_policy"
 
     else if not model.acknowledgedIdentityVerificationPolicy then
-        Err "identity_verification_policy"
+        Invalid "identity_verification_policy"
 
     else
-        Ok True
+        Valid
 
 
 
 -- HELPERS
 
 
-isValid : Result String Bool -> Bool
+isValid : ValidationResult -> Bool
 isValid validation =
     case validation of
-        Ok _ ->
+        Valid ->
             True
 
-        Err _ ->
+        Invalid _ ->
             False
 
 
-feedbackText : Result String Bool -> String
+feedbackText : ValidationResult -> String
 feedbackText validation =
     case validation of
-        Ok _ ->
+        Valid ->
             ""
 
-        Err text ->
+        Invalid text ->
             text
 
 
