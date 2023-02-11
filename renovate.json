@@ -9,9 +9,33 @@
     "platformAutomerge": true,
     "lockFileMaintenance": {
         "enabled": true,
-        "schedule": ["before 10am every weekday except before 9am every weekday"]
+        "schedule": ["before 4pm every weekday except before 9am every weekday"]
+    },
+    "python": {
+        "packageRules": [
+            {
+              "matchPackageNames": ["Authlib"],
+              "prPriority": 3
+            },
+            {
+              "matchPackageNames": ["Flask"],
+              "prPriority": 4
+            },
+        ]
+    },
+    "js": {
+        "packageRules": [
+            {
+              "matchPackageNames": ["terser"],
+              "prPriority": 1
+            },
+            {
+              "matchPackageNames": ["elm"],
+              "prPriority": 2
+            },
+        ]
     },
     "rangeStrategy": "pin",
     "timezone": "America/New_York",
-    "schedule": ["before 4pm every weekday except before 10am every weekday"]
+    "schedule": ["before 4pm every weekday except before 9am every weekday"]
 }
