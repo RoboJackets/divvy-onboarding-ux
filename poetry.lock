@@ -1035,14 +1035,14 @@ files = [
 
 [[package]]
 name = "types-ldap3"
-version = "2.9.13.8"
+version = "2.9.13.10"
 description = "Typing stubs for ldap3"
 category = "dev"
 optional = false
 python-versions = "*"
 files = [
-    {file = "types-ldap3-2.9.13.8.tar.gz", hash = "sha256:24369fa1f835109de15b23a86638e2237d2f16a80d888c88b02773399d28df99"},
-    {file = "types_ldap3-2.9.13.8-py3-none-any.whl", hash = "sha256:2b71b9411f85a093207515a2c9c73452d17f8168dbfabc08b696bc083bfb7341"},
+    {file = "types-ldap3-2.9.13.10.tar.gz", hash = "sha256:96478fef4b919ed3f306eedcad5164e705d22a7591a7ee9f272b8113d110e530"},
+    {file = "types_ldap3-2.9.13.10-py3-none-any.whl", hash = "sha256:778ab5bdd5e31fa81026a3c114ecc2925d273c343687d79af71e25c55fdd2499"},
 ]
 
 [package.dependencies]
@@ -1050,26 +1050,26 @@ types-pyasn1 = "*"
 
 [[package]]
 name = "types-pyasn1"
-version = "0.4.0.2"
+version = "0.4.0.3"
 description = "Typing stubs for pyasn1"
 category = "dev"
 optional = false
 python-versions = "*"
 files = [
-    {file = "types-pyasn1-0.4.0.2.tar.gz", hash = "sha256:57b5e1574faefda0214041c8eed907503eb990fb468cd86e40b29237cb52316b"},
-    {file = "types_pyasn1-0.4.0.2-py3-none-any.whl", hash = "sha256:0b22c13996422898e6d7208f25c5add389d04e331c76fd3f64181017d83d8ef7"},
+    {file = "types-pyasn1-0.4.0.3.tar.gz", hash = "sha256:bf3608842e98ff7c01a5e9ef229934cf935eb04f9680ae845a19abaa433a18f3"},
+    {file = "types_pyasn1-0.4.0.3-py3-none-any.whl", hash = "sha256:5058031065f5023bdf19598ac080367da8ff9807616301797df29dd4043f965e"},
 ]
 
 [[package]]
 name = "types-requests"
-version = "2.28.11.13"
+version = "2.28.11.14"
 description = "Typing stubs for requests"
 category = "dev"
 optional = false
 python-versions = "*"
 files = [
-    {file = "types-requests-2.28.11.13.tar.gz", hash = "sha256:3fd332842e8759ea5f7eb7789df8aa772ba155216ccf10ef4aa3b0e5b42e1b46"},
-    {file = "types_requests-2.28.11.13-py3-none-any.whl", hash = "sha256:94896f6f8e9f3db11e422c6e3e4abbc5d7ccace853eac74b23bdd65eeee3cdee"},
+    {file = "types-requests-2.28.11.14.tar.gz", hash = "sha256:232792870b60adb07d23175451ab4e6190021b0c584edf052d92d9b993118f06"},
+    {file = "types_requests-2.28.11.14-py3-none-any.whl", hash = "sha256:f84613b0d4c5d0eeb7879dfa05e14a3702b9c1f7a4ee81dfe9b4321b13fe93a1"},
 ]
 
 [package.dependencies]
@@ -1077,14 +1077,14 @@ types-urllib3 = "<1.27"
 
 [[package]]
 name = "types-urllib3"
-version = "1.26.25.6"
+version = "1.26.25.7"
 description = "Typing stubs for urllib3"
 category = "dev"
 optional = false
 python-versions = "*"
 files = [
-    {file = "types-urllib3-1.26.25.6.tar.gz", hash = "sha256:35586727cbd7751acccf2c0f34a88baffc092f435ab62458f10776466590f2d5"},
-    {file = "types_urllib3-1.26.25.6-py3-none-any.whl", hash = "sha256:a6c23c41bd03e542eaee5423a018f833077b51c4bf9ceb5aa544e12b812d5604"},
+    {file = "types-urllib3-1.26.25.7.tar.gz", hash = "sha256:df4d3e5472bf8830bd74eac12d56e659f88662ba040c7d106bf3a5bee26fff28"},
+    {file = "types_urllib3-1.26.25.7-py3-none-any.whl", hash = "sha256:28d2d7f5c31ff8ed4d9d2e396ce906c49d37523c3ec207d03d3b1695755a7199"},
 ]
 
 [[package]]
