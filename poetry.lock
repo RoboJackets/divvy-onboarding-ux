@@ -982,14 +982,14 @@ tornado = ["tornado (>=5)"]
 
 [[package]]
 name = "setuptools"
-version = "67.3.3"
+version = "67.4.0"
 description = "Easily download, build, install, upgrade, and uninstall Python packages"
 category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "setuptools-67.3.3-py3-none-any.whl", hash = "sha256:9d3de8591bd6f6522594406fa46a6418eabd0562dacb267f8556675762801514"},
-    {file = "setuptools-67.3.3.tar.gz", hash = "sha256:ed4e75fafe103c79b692f217158ba87edf38d31004b9dbc1913debb48793c828"},
+    {file = "setuptools-67.4.0-py3-none-any.whl", hash = "sha256:f106dee1b506dee5102cc3f3e9e68137bbad6d47b616be7991714b0c62204251"},
+    {file = "setuptools-67.4.0.tar.gz", hash = "sha256:e5fd0a713141a4a105412233c63dc4e17ba0090c8e8334594ac790ec97792330"},
 ]
 
 [package.extras]
@@ -1035,14 +1035,14 @@ files = [
 
 [[package]]
 name = "types-ldap3"
-version = "2.9.13.10"
+version = "2.9.13.11"
 description = "Typing stubs for ldap3"
 category = "dev"
 optional = false
 python-versions = "*"
 files = [
-    {file = "types-ldap3-2.9.13.10.tar.gz", hash = "sha256:96478fef4b919ed3f306eedcad5164e705d22a7591a7ee9f272b8113d110e530"},
-    {file = "types_ldap3-2.9.13.10-py3-none-any.whl", hash = "sha256:778ab5bdd5e31fa81026a3c114ecc2925d273c343687d79af71e25c55fdd2499"},
+    {file = "types-ldap3-2.9.13.11.tar.gz", hash = "sha256:6ba2ca03a7111bb648111e6e9dc9dd774f50a75b948578ae3ee086ac5dab3854"},
+    {file = "types_ldap3-2.9.13.11-py3-none-any.whl", hash = "sha256:d0684ab80f8e475138963e653552446b8e4fe4e60df45be69db73fa3fd8d3194"},
 ]
 
 [package.dependencies]
@@ -1050,14 +1050,14 @@ types-pyasn1 = "*"
 
 [[package]]
 name = "types-pyasn1"
-version = "0.4.0.3"
+version = "0.4.0.4"
 description = "Typing stubs for pyasn1"
 category = "dev"
 optional = false
 python-versions = "*"
 files = [
-    {file = "types-pyasn1-0.4.0.3.tar.gz", hash = "sha256:bf3608842e98ff7c01a5e9ef229934cf935eb04f9680ae845a19abaa433a18f3"},
-    {file = "types_pyasn1-0.4.0.3-py3-none-any.whl", hash = "sha256:5058031065f5023bdf19598ac080367da8ff9807616301797df29dd4043f965e"},
+    {file = "types-pyasn1-0.4.0.4.tar.gz", hash = "sha256:51fa411f4af22182c12c97340d4912026e942d5de817653d7167fe5d5d0eb6cd"},
+    {file = "types_pyasn1-0.4.0.4-py3-none-any.whl", hash = "sha256:bb8b4bbd48ea71f3e98fe7bc05e44dba5001bd67150f18e49fe85260d9550fc9"},
 ]
 
 [[package]]
