@@ -13,7 +13,7 @@ Authlib = "1.2.0"
 requests = "2.28.2"
 ldap3 = "2.9.1"
 uwsgi = "2.0.21"
-sentry-sdk = {extras = ["pure-eval", "flask"], version = "1.15.0"}
+sentry-sdk = {extras = ["pure-eval", "flask"], version = "1.16.0"}
 
 [tool.poetry.group.dev.dependencies]
 black = "23.1.0"
