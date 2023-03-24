@@ -86,8 +86,6 @@ job "divvy-onboarding-ux" {
       config {
         image = var.image
 
-        force_pull = true
-
         network_mode = "host"
 
         entrypoint = [
@@ -116,8 +114,6 @@ job "divvy-onboarding-ux" {
 
       config {
         image = var.image
-
-        force_pull = true
 
         network_mode = "host"
 
