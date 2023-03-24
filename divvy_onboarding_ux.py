@@ -231,15 +231,17 @@ def login() -> Any:  # pylint: disable=too-many-branches,too-many-statements
             raise InternalServerError("Unable to retrieve user information from Apiary")
 
     if session["user_state"] == "eligible":  # pylint: disable=too-many-nested-blocks
-        ldap = Connection(
-            Server("whitepages.gatech.edu"),
-            auto_bind=True,  # type: ignore
-        )
-        result = ldap.search(
-            search_base="dc=whitepages,dc=gatech,dc=edu",
-            search_filter="(uid=" + username + ")",
-            attributes=["postOfficeBox", "homePostalAddress"],
-        )
+        with sentry_sdk.start_span(op="ldap.connect"):
+            ldap = Connection(
+                Server("whitepages.gatech.edu"),
+                auto_bind=True,  # type: ignore
+            )
+        with sentry_sdk.start_span(op="ldap.search"):
+            result = ldap.search(
+                search_base="dc=whitepages,dc=gatech,dc=edu",
+                search_filter="(uid=" + username + ")",
+                attributes=["postOfficeBox", "homePostalAddress"],
+            )
 
         georgia_tech_mailbox = None
         home_address = None
