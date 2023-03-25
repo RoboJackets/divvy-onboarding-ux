@@ -1,6 +1,7 @@
 """
 Overengineered web form to facilitate onboarding users to Divvy
 """
+from datetime import datetime, timezone
 from re import fullmatch
 from typing import Any, Dict, Union
 
@@ -137,7 +138,7 @@ def index() -> Any:
 
 
 @app.get("/login")
-def login() -> Any:  # pylint: disable=too-many-branches,too-many-statements
+def login() -> Any:  # pylint: disable=too-many-branches,too-many-statements,too-many-locals
     """
     Handles the return from Keycloak and collects default values for the form
     """
@@ -190,7 +191,7 @@ def login() -> Any:  # pylint: disable=too-many-branches,too-many-statements
                 "Authorization": "Bearer " + app.config["APIARY_TOKEN"],
                 "Accept": "application/json",
             },
-            params={"include": "roles,teams"},
+            params={"include": "roles,teams,assignments.travel"},
             timeout=(5, 5),
         )
 
@@ -210,16 +211,26 @@ def login() -> Any:  # pylint: disable=too-many-branches,too-many-statements
 
             role_check = False
 
-            for role in apiary_user["roles"]:
-                if role["name"] != "member" and role["name"] != "non-member":
-                    role_check = True
+            if "roles" in apiary_user and apiary_user["roles"] is not None:
+                for role in apiary_user["roles"]:
+                    if role["name"] != "member" and role["name"] != "non-member":
+                        role_check = True
+
+            travel_check = False
+
+            if "travel" in apiary_user and apiary_user["travel"] is not None:
+                for travel in apiary_user["travel"]:
+                    if datetime.now(timezone.utc) < datetime.fromisoformat(
+                        travel["travel"]["return_date"]
+                    ):
+                        travel_check = True
 
             if (
-                apiary_user["is_active"]
+                apiary_user["is_active"]  # pylint: disable=too-many-boolean-expressions
                 and apiary_user["is_access_active"]
                 and apiary_user["signed_latest_agreement"]
                 and len(apiary_user["teams"]) > 0
-                and role_check
+                and (role_check or travel_check)
             ):
                 session["user_state"] = "eligible"
 
