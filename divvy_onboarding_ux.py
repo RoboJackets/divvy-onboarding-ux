@@ -46,6 +46,9 @@ sentry_sdk.init(
     in_app_include=[
         "divvy_onboarding_ux",
     ],
+    _experiments={
+        "profiles_sample_rate": 1.0,
+    },
 )
 
 app = Flask(__name__)
