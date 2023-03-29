@@ -16,7 +16,7 @@ uwsgi = "2.0.21"
 sentry-sdk = {extras = ["pure-eval", "flask"], version = "1.18.0"}
 
 [tool.poetry.group.dev.dependencies]
-black = "23.1.0"
+black = "23.3.0"
 flake8 = "6.0.0"
 flake8-black = "0.3.6"
 flake8-bugbear = "23.3.23"
