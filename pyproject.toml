@@ -10,7 +10,7 @@ readme = "README.md"
 python = "^3.10"
 Flask = "2.3.2"
 Authlib = "1.2.0"
-requests = "2.29.0"
+requests = "2.30.0"
 ldap3 = "2.9.1"
 uwsgi = "2.0.21"
 sentry-sdk = {extras = ["pure-eval", "flask"], version = "1.21.1"}
