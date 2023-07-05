@@ -480,14 +480,14 @@ setuptools = "*"
 
 [[package]]
 name = "flake8-json"
-version = "21.7.0"
+version = "23.7.0"
 description = "JSON Formatting Reporter plugin for Flake8"
 category = "dev"
 optional = false
-python-versions = "!=3.0,!=3.1,!=3.2,!=3.3,>=2.7"
+python-versions = ">=3.6"
 files = [
-    {file = "flake8-json-21.7.0.tar.gz", hash = "sha256:06320a075a134e89d49f668b6c8bf3bf90860a48202c6bbab60beeadcce70fc3"},
-    {file = "flake8_json-21.7.0-py2.py3-none-any.whl", hash = "sha256:6d41afdac196412bfcd4d78e1ee329a78946e4dc2696d8572280af3319cd51d8"},
+    {file = "flake8_json-23.7.0-py2.py3-none-any.whl", hash = "sha256:be98aabaf93d143f2f767f51695b8a8685c2c819bcf40eb9acfb8326d034dda0"},
+    {file = "flake8_json-23.7.0.tar.gz", hash = "sha256:173110906cc778771dabe79f56a79361a65ca533771d756a32c0a5f35641dfd1"},
 ]
 
 [[package]]
@@ -1222,4 +1222,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "08489d840854977cda614747e35b11a1931767be793ba4a98da592a421100746"
+content-hash = "9b6aa6e3813f75131e7d9c36c00ef862bc7b2bfd09594e78f4bf4c6649a98f56"
