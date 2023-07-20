@@ -35,6 +35,11 @@
             }
         ]
     },
+    "docker": {
+        "major": {
+            "enabled": true
+        }
+    },
     "rangeStrategy": "pin",
     "timezone": "America/New_York",
     "schedule": ["before 4pm on Wednesday except before 9am on Wednesday"]
