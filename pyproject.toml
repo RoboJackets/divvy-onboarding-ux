@@ -12,7 +12,7 @@ Flask = "2.3.2"
 Authlib = "1.2.1"
 requests = "2.31.0"
 ldap3 = "2.9.1"
-uwsgi = "2.0.21"
+uwsgi = "2.0.22"
 sentry-sdk = {extras = ["pure-eval", "flask"], version = "1.28.1"}
 
 [tool.poetry.group.dev.dependencies]
