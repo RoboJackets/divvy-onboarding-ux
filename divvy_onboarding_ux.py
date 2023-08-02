@@ -42,7 +42,7 @@ sentry_sdk.init(
     ],
     traces_sampler=traces_sampler,
     attach_stacktrace=True,
-    request_bodies="always",
+    max_request_body_size="always",
     in_app_include=[
         "divvy_onboarding_ux",
     ],
