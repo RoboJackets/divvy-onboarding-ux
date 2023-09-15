@@ -569,7 +569,7 @@ def submit() -> Union[Response, str]:  # pylint: disable=too-many-branches
             "Subject": request.form["first_name"]
             + " "
             + request.form["last_name"]
-            + " requested a Divvy account",
+            + " requested a BILL Spend & Expense account",
             "TextBody": render_template("email.txt", manager=manager["full_name"]),
             "MessageStream": "outbound",
         },
