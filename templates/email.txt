@@ -1,4 +1,4 @@
-Please review the below information and reply-all if it is not correct. Divvy will send a separate email to {{ request.form["email_address"] }} once the account is created.
+Please review the below information and reply-all if it is not correct. BILL Spend & Expense will send a separate email to {{ request.form["email_address"] }} once the account is created.
 
 First Name: {{ request.form["first_name"] }}
 Last Name: {{ request.form["last_name"] }}

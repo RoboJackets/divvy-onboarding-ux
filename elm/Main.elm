@@ -586,18 +586,18 @@ subscriptions _ =
 
 view : Model -> Browser.Document Msg
 view model =
-    { title = "Divvy Onboarding"
+    { title = "BILL Spend & Expense Onboarding"
     , body =
         [ div [ class "container", class "mt-md-4", class "mt-3", style "max-width" "48rem" ]
             [ h1 []
-                [ text "Divvy Onboarding"
+                [ text "BILL Spend & Expense Onboarding"
                 ]
             , p [ class "mt-4", class "mb-4" ]
                 [ text "RoboJackets, Inc. uses "
-                , a [ href "https://getdivvy.com" ]
-                    [ text "Divvy"
+                , a [ href "https://www.bill.com/product/spend-and-expense" ]
+                    [ text "BILL Spend & Expense"
                     ]
-                , text " to issue corporate credit cards and manage reimbursements. We need some information from you to create your Divvy account."
+                , text " to issue corporate credit cards and manage reimbursements. We need some information from you to create your BILL Spend & Expense account."
                 ]
             , Html.form
                 [ class "row"
@@ -774,7 +774,7 @@ view model =
                         , label [ for "order_physical_card", class "form-check-label" ]
                             [ text "Order a physical card" ]
                         , div [ class "form-text", class "mb-3" ]
-                            [ text "We recommend a physical card for everyone. You will only be able to use it once you activate it ", strong [] [ text " and " ], text " are added to a budget. If you choose not to order one now, you can do so within Divvy later on." ]
+                            [ text "We recommend a physical card for everyone. You will only be able to use it once you activate it ", strong [] [ text " and " ], text " are added to a budget. If you choose not to order one now, you can do so within BILL Spend & Expense later on." ]
                         ]
                     ]
                 , div [ class "col-12", classList [ ( "d-none", not model.orderPhysicalCard ) ] ]
@@ -1010,13 +1010,13 @@ view model =
                             ]
                             []
                         , label [ class "form-check-label", for "identity_verification_policy" ]
-                            [ text "I am willing and able to provide my date of birth, Social Security number, and/or passport information to Divvy for identity verification, if requested."
+                            [ text "I am willing and able to provide my date of birth, Social Security number, and/or passport information to BILL for identity verification, if requested."
                             ]
                         , div [ class "invalid-feedback" ]
                             [ text "Please acknowledge the reimbursement policy" ]
                         , div [ class "form-text" ]
-                            [ text "This information will only be used for identity verification and will not be visible to anyone within RoboJackets. Read more about Divvy's identity verification policies in the "
-                            , a [ href "https://help.getdivvy.com/en/articles/5304326-date-of-birth-dob-collection-faq" ] [ text "Divvy Help Center" ]
+                            [ text "This information will only be used for identity verification and will not be visible to anyone within RoboJackets. Read more about BILL Spend & Expense's identity verification policies in the "
+                            , a [ href "https://help.bill.com/direct/s/article/5304326" ] [ text "BILL Help Center" ]
                             , text "."
                             ]
                         ]
