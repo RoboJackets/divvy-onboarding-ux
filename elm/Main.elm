@@ -1013,7 +1013,7 @@ view model =
                             [ text "I am willing and able to provide my date of birth, Social Security number, and/or passport information to BILL for identity verification, if requested."
                             ]
                         , div [ class "invalid-feedback" ]
-                            [ text "Please acknowledge the reimbursement policy" ]
+                            [ text "Please acknowledge the identity verification policy" ]
                         , div [ class "form-text" ]
                             [ text "This information will only be used for identity verification and will not be visible to anyone within RoboJackets. Read more about BILL Spend & Expense's identity verification policies in the "
                             , a [ href "https://help.bill.com/direct/s/article/5304326" ] [ text "BILL Help Center" ]
