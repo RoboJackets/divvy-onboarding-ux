@@ -2,7 +2,7 @@
 
 ARG base_image=python:3.12-slim-bullseye
 
-FROM node:20 as frontend
+FROM node:21 as frontend
 
 RUN npm install -g npm@latest
 
