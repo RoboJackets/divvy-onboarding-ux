@@ -1,7 +1,5 @@
 # syntax = docker/dockerfile:1.4
 
-ARG base_image=python:3.12-slim-bullseye
-
 FROM node:21 as frontend
 
 RUN npm install -g npm@latest
@@ -17,7 +15,7 @@ RUN set -eux && \
     npm ci --no-progress && \
     npm run build
 
-FROM ${base_image}
+FROM python:3.11-slim-bullseye
 
 ENV DEBIAN_FRONTEND=noninteractive \
     PATH="${PATH}:/root/.local/bin" \
