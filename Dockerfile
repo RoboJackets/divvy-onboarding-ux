@@ -15,7 +15,7 @@ RUN set -eux && \
     npm ci --no-progress && \
     npm run build
 
-FROM python:3.11-slim-bullseye
+FROM python:3.12-slim-bullseye
 
 ENV DEBIAN_FRONTEND=noninteractive \
     PATH="${PATH}:/root/.local/bin" \
