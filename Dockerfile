@@ -1,6 +1,6 @@
 # syntax = docker/dockerfile:1.6
 
-FROM node:21.4.0 as frontend
+FROM node:21.5.0 as frontend
 
 RUN npm install -g npm@latest
 
