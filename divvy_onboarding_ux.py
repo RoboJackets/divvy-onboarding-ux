@@ -1,6 +1,7 @@
 """
 Overengineered web form to facilitate onboarding users to Divvy
 """
+
 from datetime import datetime, timezone
 from re import fullmatch
 from typing import Any, Dict, Union
