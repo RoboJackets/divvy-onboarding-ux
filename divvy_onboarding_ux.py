@@ -1,5 +1,5 @@
 """
-Overengineered web form to facilitate onboarding users to Divvy
+Overengineered web form to facilitate onboarding users to BILL Spend & Expense
 """
 
 from datetime import datetime, timezone
