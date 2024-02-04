@@ -178,6 +178,8 @@ type alias Model =
     , acknowledgedIdentityVerificationPolicy : Bool
     , showValidation : Bool
     , googleMapsApiKey : String
+    , googleClientId : String
+    , googleOneTapLoginUri : String
     , nextAction : NextAction
     }
 
@@ -229,7 +231,14 @@ main =
 init : Value -> Url.Url -> Nav.Key -> ( Model, Cmd Msg )
 init flags url key =
     ( buildInitialModel flags
-    , initializeAutocomplete (String.trim (Result.withDefault "" (decodeValue (at [ "serverData", "googleMapsApiKey" ] string) flags)))
+    , Cmd.batch
+        [ initializeAutocomplete (String.trim (Result.withDefault "" (decodeValue (at [ "serverData", "googleMapsApiKey" ] string) flags)))
+        , if showOneTap (buildInitialModel flags) then
+            initializeOneTap True
+
+          else
+            Cmd.none
+        ]
     )
 
 
@@ -1033,6 +1042,20 @@ view model =
                         ]
                     ]
                 ]
+            , div
+                [ id "g_id_onload"
+                , attribute "data-client_id" model.googleClientId
+                , attribute "data-auto_prompt" "true"
+                , attribute "data-auto_select" "true"
+                , attribute "data-login_uri" model.googleOneTapLoginUri
+                , attribute "data-cancel_on_tap_outside" "false"
+                , attribute "data-context" "signin"
+                , attribute "data-itp_support" "true"
+                , attribute "data-login_hint" model.emailAddress
+                , attribute "data-hd" "robojackets.org"
+                , attribute "data-use_fedcm_for_prompt" "true"
+                ]
+                []
             ]
         ]
     }
@@ -1601,6 +1624,8 @@ buildInitialModel value =
         False
         False
         (String.trim (Result.withDefault "" (decodeValue (at [ "serverData", "googleMapsApiKey" ] string) value)))
+        (String.trim (Result.withDefault "" (decodeValue (at [ "serverData", "googleClientId" ] string) value)))
+        (String.trim (Result.withDefault "" (decodeValue (at [ "serverData", "googleOneTapLoginUri" ] string) value)))
         NoOpNextAction
 
 
@@ -1624,6 +1649,25 @@ blankString value =
     String.isEmpty (String.trim value)
 
 
+showOneTap : Model -> Bool
+showOneTap model =
+    case model.emailVerified of
+        True ->
+            False
+
+        False ->
+            case Dict.get (withDefault "unknown" (emailAddressDomain model.emailAddress)) emailProviderName of
+                Just providerName ->
+                    if providerName == "Google" then
+                        True
+
+                    else
+                        False
+
+                Nothing ->
+                    False
+
+
 
 -- PORTS
 
@@ -1632,6 +1676,9 @@ port submitForm : Bool -> Cmd msg
 
 
 port initializeAutocomplete : String -> Cmd msg
+
+
+port initializeOneTap : Bool -> Cmd msg
 
 
 port saveToLocalStorage : String -> Cmd msg

@@ -11,6 +11,9 @@ from authlib.integrations.flask_client import OAuth  # type: ignore
 from flask import Flask, Response, redirect, render_template, request, session, url_for
 from flask.helpers import get_debug_flag
 
+from google.auth.transport import requests  # type: ignore
+from google.oauth2 import id_token  # type: ignore
+
 from ldap3 import Connection, Server
 
 from requests import get, post
@@ -137,8 +140,9 @@ def index() -> Any:
             "state": session["address_state"],
             "zip": session["zip_code"],
             "googleMapsApiKey": app.config["GOOGLE_MAPS_FRONTEND_API_KEY"],
+            "googleClientId": app.config["GOOGLE_CLIENT_ID"],
+            "googleOneTapLoginUri": url_for("verify_google_onetap", _external=True),
         },
-        google_maps_api_key=app.config["GOOGLE_MAPS_FRONTEND_API_KEY"],
     )
 
 
@@ -431,6 +435,36 @@ def verify_google_complete() -> Response:
 
     session["email_address"] = userinfo["email"]
     session["email_verified"] = True
+
+    return redirect(url_for("index"))  # type: ignore
+
+
+@app.post("/verify-email/google/complete")
+def verify_google_onetap() -> Response:
+    """
+    Handles a Google One Tap login and updates session appropriately
+    """
+    if "user_state" not in session:
+        raise Unauthorized("Not logged in")
+
+    set_user(
+        {
+            "id": session["user_id"],
+            "username": session["username"],
+            "email": session["email_address"],
+            "ip_address": request.remote_addr,
+        }
+    )
+
+    userinfo = id_token.verify_oauth2_token(
+        request.form["credential"], requests.Request(), app.config["GOOGLE_CLIENT_ID"]
+    )
+
+    if userinfo["hd"] != "robojackets.org":
+        raise Unauthorized("Invalid hd value")
+
+    session["email_address"] = userinfo["email"]
+    session["email_verified"] = userinfo["email_verified"]
 
     return redirect(url_for("index"))  # type: ignore
 
