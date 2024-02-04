@@ -195,6 +195,7 @@ job "divvy-onboarding-ux" {
           nginx-config = local.compressed_nginx_configuration
           socket = "/var/opt/nomad/run/${NOMAD_JOB_NAME}-${NOMAD_ALLOC_ID}.sock"
           firewall-rules = jsonencode(["internet"])
+          referrer-policy = "strict-origin-when-cross-origin"
         }
       }
 
