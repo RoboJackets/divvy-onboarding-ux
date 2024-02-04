@@ -1042,21 +1042,21 @@ view model =
                         ]
                     ]
                 ]
-            , div
-                [ id "g_id_onload"
-                , attribute "data-client_id" model.googleClientId
-                , attribute "data-auto_prompt" "true"
-                , attribute "data-auto_select" "true"
-                , attribute "data-login_uri" model.googleOneTapLoginUri
-                , attribute "data-cancel_on_tap_outside" "false"
-                , attribute "data-context" "signin"
-                , attribute "data-itp_support" "true"
-                , attribute "data-login_hint" model.emailAddress
-                , attribute "data-hd" "robojackets.org"
-                , attribute "data-use_fedcm_for_prompt" "true"
-                ]
-                []
             ]
+        , div
+            [ id "g_id_onload"
+            , attribute "data-client_id" model.googleClientId
+            , attribute "data-auto_prompt" "true"
+            , attribute "data-auto_select" "true"
+            , attribute "data-login_uri" model.googleOneTapLoginUri
+            , attribute "data-cancel_on_tap_outside" "false"
+            , attribute "data-context" "signin"
+            , attribute "data-itp_support" "true"
+            , attribute "data-login_hint" model.emailAddress
+            , attribute "data-hd" "robojackets.org"
+            , attribute "data-use_fedcm_for_prompt" "true"
+            ]
+            []
         ]
     }
 
