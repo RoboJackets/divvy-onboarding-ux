@@ -12,7 +12,7 @@ Flask = "3.0.2"
 Authlib = "1.3.0"
 requests = "2.31.0"
 ldap3 = "2.9.1"
-uwsgi = "2.0.23"
+uwsgi = "2.0.24"
 sentry-sdk = {extras = ["pure-eval", "flask"], version = "1.40.4"}
 google-auth = "2.27.0"
 
