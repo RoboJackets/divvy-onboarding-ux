@@ -17,7 +17,7 @@ sentry-sdk = {extras = ["pure-eval", "flask"], version = "1.40.4"}
 google-auth = "2.27.0"
 
 [tool.poetry.group.dev.dependencies]
-black = "24.1.1"
+black = "24.2.0"
 flake8 = "7.0.0"
 flake8-black = "0.3.6"
 flake8-bugbear = "24.1.17"
