@@ -132,6 +132,7 @@ job "divvy-onboarding-ux" {
           "--buffer-size=8192",
           "--single-interpreter",
           "--lazy-apps",
+          "--need-app",
         ]
       }
 
