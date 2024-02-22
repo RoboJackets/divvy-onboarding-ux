@@ -52,7 +52,6 @@ sentry_sdk.init(
     ],
     _experiments={
         "profiles_sample_rate": 1.0,
-        "force_enable_metrics": True,
     },
 )
 
