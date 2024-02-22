@@ -253,7 +253,7 @@ def login() -> Any:  # pylint: disable=too-many-branches,too-many-statements,too
         with sentry_sdk.start_span(op="ldap.connect"):
             ldap = Connection(
                 Server("whitepages.gatech.edu"),
-                auto_bind=True,  # type: ignore
+                auto_bind=True,
             )
         with sentry_sdk.start_span(op="ldap.search"):
             result = ldap.search(
