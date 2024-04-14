@@ -6,7 +6,6 @@ from datetime import datetime, timezone
 from email.headerregistry import Address
 from re import fullmatch
 from typing import Any, Dict, Union
-from urllib.parse import urlparse
 
 from authlib.integrations.flask_client import OAuth  # type: ignore
 
