@@ -27,7 +27,7 @@ jobs:
     name: ${{ inputs.environment }}
     environment:
       name: ${{ inputs.environment }}
-      url: ${{ inputs.environment == 'test' && 'https://divvy-onboarding-ux-test.bcdc.robojackets.net' || (inputs.environment == 'production' && 'https://card.robojackets.org' || 'https://robojackets.org')) }}
+      url: ${{ inputs.environment == 'test' && 'https://divvy-onboarding-ux-test.bcdc.robojackets.net' || (inputs.environment == 'production' && 'https://card.robojackets.org' || 'https://robojackets.org') }}
     permissions:
       id-token: write
       contents: read
@@ -56,4 +56,4 @@ jobs:
           NOMAD_ADDR: https://nomad.bcdc.robojackets.net
         working-directory: ./.nomad/
         run: |
-          nomad run -var image=registry.bcdc.robojackets.net/divvy-onboarding-ux@${{ inputs.image-digest }} -var hostname=${{ inputs.environment == 'test' && 'divvy-onboarding-ux-test.bcdc.robojackets.net' || (inputs.environment == 'production' && 'card.robojackets.org' || 'https://robojackets.org')) }} divvy-onboarding-ux.nomad
+          nomad run -var image=registry.bcdc.robojackets.net/divvy-onboarding-ux@${{ inputs.image-digest }} -var hostname=${{ inputs.environment == 'test' && 'divvy-onboarding-ux-test.bcdc.robojackets.net' || (inputs.environment == 'production' && 'card.robojackets.org' || 'https://robojackets.org') }} divvy-onboarding-ux.nomad
