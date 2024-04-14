@@ -17,7 +17,7 @@ from google.oauth2 import id_token  # type: ignore
 
 from ldap3 import Connection, Server
 
-from requests import get, post, delete
+from requests import delete, get, post
 
 import sentry_sdk
 from sentry_sdk import capture_message, set_user
