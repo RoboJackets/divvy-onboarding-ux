@@ -17,7 +17,7 @@ from google.oauth2 import id_token  # type: ignore
 
 from ldap3 import Connection, Server
 
-from requests import get, post
+from requests import get, post, delete
 
 import sentry_sdk
 from sentry_sdk import capture_message, set_user
@@ -166,6 +166,7 @@ def login() -> Any:  # pylint: disable=too-many-branches,too-many-statements,too
     session["address_state"] = None
     session["zip_code"] = ""
     session["manager_id"] = None
+    session["sub"] = userinfo["sub"]
 
     if "googleWorkspaceAccount" in userinfo:
         session["email_address"] = userinfo["googleWorkspaceAccount"]
@@ -534,6 +535,19 @@ def submit() -> Union[Response, str]:  # pylint: disable=too-many-branches
 
     manager = manager_response.json()["user"]
 
+    keycloak_access_token_response = post(
+        url=app.config["KEYCLOAK_SERVER"] + "/realms/master/protocol/openid-connect/token",
+        data={
+            "client_id": app.config["KEYCLOAK_ADMIN_CLIENT_ID"],
+            "client_secret": app.config["KEYCLOAK_ADMIN_CLIENT_SECRET"],
+            "grant_type": "client_credentials",
+        },
+        timeout=(5, 5),
+    )
+
+    if keycloak_access_token_response.status_code != 200:
+        raise InternalServerError("Failed to retrieve access token for Keycloak")
+
     if (
         "gmail_address" in manager
         and manager["gmail_address"] is not None
@@ -541,19 +555,6 @@ def submit() -> Union[Response, str]:  # pylint: disable=too-many-branches
     ):
         manager_email_address = manager["gmail_address"]
     else:
-        keycloak_access_token_response = post(
-            url=app.config["KEYCLOAK_SERVER"] + "/realms/master/protocol/openid-connect/token",
-            data={
-                "client_id": app.config["KEYCLOAK_ADMIN_CLIENT_ID"],
-                "client_secret": app.config["KEYCLOAK_ADMIN_CLIENT_SECRET"],
-                "grant_type": "client_credentials",
-            },
-            timeout=(5, 5),
-        )
-
-        if keycloak_access_token_response.status_code != 200:
-            raise InternalServerError("Failed to retrieve access token for Keycloak")
-
         keycloak_user_response = get(
             url=app.config["KEYCLOAK_SERVER"]
             + "/admin/realms/"
@@ -615,6 +616,38 @@ def submit() -> Union[Response, str]:  # pylint: disable=too-many-branches
     )
 
     if postmark_response.status_code == 200:
+        # remove eligible role
+        delete(
+            url=app.config["KEYCLOAK_SERVER"]
+            + "/admin/realms/"
+            + app.config["KEYCLOAK_REALM"]
+            + "/users/"
+            + session["sub"]
+            + "/role-mappings/clients/"
+            + app.config["KEYCLOAK_CLIENT_UUID"],
+            headers={
+                "Authorization": "Bearer " + keycloak_access_token_response.json()["access_token"],
+            },
+            timeout=(5, 5),
+            json=[{"id": app.config["KEYCLOAK_CLIENT_ROLE_ELIGIBLE"], "name": "eligible"}],
+        )
+
+        # add provisioned role
+        post(
+            url=app.config["KEYCLOAK_SERVER"]
+            + "/admin/realms/"
+            + app.config["KEYCLOAK_REALM"]
+            + "/users/"
+            + session["sub"]
+            + "/role-mappings/clients/"
+            + app.config["KEYCLOAK_CLIENT_UUID"],
+            headers={
+                "Authorization": "Bearer " + keycloak_access_token_response.json()["access_token"],
+            },
+            timeout=(5, 5),
+            json=[{"id": app.config["KEYCLOAK_CLIENT_ROLE_PROVISIONED"], "name": "provisioned"}],
+        )
+
         session["user_state"] = "requested"
         return render_template("submitted.html")
 
