@@ -3,6 +3,7 @@ Overengineered web form to facilitate onboarding users to BILL Spend & Expense
 """
 
 from datetime import datetime, timezone
+from email.headerregistry import Address
 from re import fullmatch
 from typing import Any, Dict, Union
 
@@ -394,14 +395,16 @@ def verify_email() -> Any:
     if session["user_state"] != "eligible":
         raise Unauthorized("Not eligible")
 
-    if request.args["emailAddress"].endswith("robojackets.org"):
+    email_address_domain = Address(addr_spec=request.args["emailAddress"]).domain
+
+    if email_address_domain.endswith("robojackets.org"):
         return oauth.google.authorize_redirect(
             url_for("verify_google_complete", _external=True),
             login_hint=request.args["emailAddress"],
             hd="robojackets.org",
         )
 
-    if request.args["emailAddress"].endswith("gatech.edu"):
+    if email_address_domain.endswith("gatech.edu"):
         return oauth.microsoft.authorize_redirect(
             url_for("verify_microsoft_complete", _external=True),
             login_hint=request.args["emailAddress"],
