@@ -1,0 +1,59 @@
+name: Deploy
+
+on:
+  workflow_call:
+    inputs:
+      image-digest:
+        required: true
+        type: string
+      environment:
+        required: true
+        type: string
+  workflow_dispatch:
+    inputs:
+      image-digest:
+        required: true
+        type: string
+      environment:
+        required: true
+        type: environment
+
+concurrency:
+  group: ${{ inputs.environment }}
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    name: ${{ inputs.environment }}
+    environment:
+      name: ${{ inputs.environment }}
+      url: ${{ inputs.environment == 'test' && 'https://divvy-onboarding-ux-test.bcdc.robojackets.net' || (inputs.environment == 'production' && 'https://card.robojackets.org' || 'https://robojackets.org')) }}
+    permissions:
+      id-token: write
+      contents: read
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Nomad
+        uses: lucasmelin/setup-nomad@v2.0.0
+
+      - name: Set job name
+        working-directory: ./.nomad/
+        run: |
+          sed -i '/job "divvy-onboarding-ux" {/c\job "divvy-onboarding-ux-${{ inputs.environment }}" {' divvy-onboarding-ux.nomad
+
+      - name: Exchange GitHub JWT for Nomad token
+        uses: RoboJackets/nomad-jwt-auth@main
+        with:
+          url: https://nomad.bcdc.robojackets.net
+          jwtGithubAudience: https://nomad.bcdc.robojackets.net
+          methodName: GitHub
+
+      - name: Run Nomad job
+        env:
+          NOMAD_ADDR: https://nomad.bcdc.robojackets.net
+        working-directory: ./.nomad/
+        run: |
+          nomad run -var image=registry.bcdc.robojackets.net/divvy-onboarding-ux@${{ inputs.image-digest }} -var hostname=${{ inputs.environment == 'test' && 'divvy-onboarding-ux-test.bcdc.robojackets.net' || (inputs.environment == 'production' && 'card.robojackets.org' || 'https://robojackets.org')) }} divvy-onboarding-ux.nomad
