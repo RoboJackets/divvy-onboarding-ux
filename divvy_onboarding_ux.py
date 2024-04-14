@@ -6,6 +6,7 @@ from datetime import datetime, timezone
 from email.headerregistry import Address
 from re import fullmatch
 from typing import Any, Dict, Union
+from urllib.parse import urlparse
 
 from authlib.integrations.flask_client import OAuth  # type: ignore
 
@@ -395,16 +396,16 @@ def verify_email() -> Any:
     if session["user_state"] != "eligible":
         raise Unauthorized("Not eligible")
 
-    email_address_domain = Address(addr_spec=request.args["emailAddress"]).domain
+    email_address_domain = Address(addr_spec=request.args["emailAddress"]).domain.split(".")[-2:]
 
-    if email_address_domain.endswith("robojackets.org"):
+    if email_address_domain == ['robojackets', 'org']:
         return oauth.google.authorize_redirect(
             url_for("verify_google_complete", _external=True),
             login_hint=request.args["emailAddress"],
             hd="robojackets.org",
         )
 
-    if email_address_domain.endswith("gatech.edu"):
+    if email_address_domain == ['gatech', 'edu']:
         return oauth.microsoft.authorize_redirect(
             url_for("verify_microsoft_complete", _external=True),
             login_hint=request.args["emailAddress"],
