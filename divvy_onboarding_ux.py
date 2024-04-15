@@ -522,7 +522,7 @@ def submit() -> Union[Response, str]:  # pylint: disable=too-many-branches
         raise BadRequest("Email address must be verified")
 
     manager_response = get(
-        url=app.config["APIARY_URL"] + "/api/v1/users/" + request.form["manager"],
+        url=app.config["APIARY_URL"] + "/api/v1/users/" + int(request.form["manager"]),
         headers={
             "Authorization": "Bearer " + app.config["APIARY_TOKEN"],
             "Accept": "application/json",
