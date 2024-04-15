@@ -515,6 +515,9 @@ def submit() -> Union[Response, str]:  # pylint: disable=too-many-branches
         }
     )
 
+    if session["user_state"] == "requested":
+        return render_template("submitted.html")
+
     if session["user_state"] != "eligible":
         raise Unauthorized("Not eligible")
 
