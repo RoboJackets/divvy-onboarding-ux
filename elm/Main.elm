@@ -1071,14 +1071,14 @@ validateName firstName lastName =
         if blankString firstName then
             Invalid "Please enter your first name"
 
-        else if String.length (String.trim firstName) > 19 then
-            Invalid "Your first name may be a maximum of 19 characters"
+        else if String.length (String.trim firstName) > 18 then
+            Invalid "Your first name may be a maximum of 18 characters"
 
         else if not (Regex.contains nameRegex firstName) then
             Invalid "Your first name may only contain letters and spaces"
 
-        else if String.length (String.trim firstName) + String.length (String.trim lastName) > 20 then
-            Invalid "Your first and last name combined may be a maximum of 20 characters"
+        else if String.length (String.trim firstName) + String.length (String.trim lastName) > 19 then
+            Invalid "Your first and last name combined may be a maximum of 19 characters"
 
         else
             Valid
@@ -1086,14 +1086,14 @@ validateName firstName lastName =
         if blankString lastName then
             Invalid "Please enter your last name"
 
-        else if String.length (String.trim lastName) > 19 then
-            Invalid "Your last name may be a maximum of 19 characters"
+        else if String.length (String.trim lastName) > 18 then
+            Invalid "Your last name may be a maximum of 18 characters"
 
         else if not (Regex.contains nameRegex lastName) then
             Invalid "Your last name may only contain letters and spaces"
 
-        else if String.length (String.trim firstName) + String.length (String.trim lastName) > 20 then
-            Invalid "Your first and last name combined may be a maximum of 20 characters"
+        else if String.length (String.trim firstName) + String.length (String.trim lastName) > 19 then
+            Invalid "Your first and last name combined may be a maximum of 19 characters"
 
         else
             Valid
