@@ -629,7 +629,7 @@ view model =
                             ]
                         , name "first_name"
                         , minlength 1
-                        , maxlength 19
+                        , maxlength 18
                         , required True
                         , placeholder "First Name"
                         , on "change" (succeed FormChanged)
@@ -653,7 +653,7 @@ view model =
                             ]
                         , name "last_name"
                         , minlength 1
-                        , maxlength 19
+                        , maxlength 18
                         , required True
                         , placeholder "Last Name"
                         , on "change" (succeed FormChanged)
