@@ -14,15 +14,15 @@
     "python": {
         "packageRules": [
             {
-                "matchPackageNames": ["python"],
+                "matchDepNames": ["python"],
                 "rangeStrategy": "replace"
             },
             {
-              "matchPackageNames": ["Authlib"],
+              "matchDepNames": ["Authlib"],
               "prPriority": 3
             },
             {
-              "matchPackageNames": ["Flask"],
+              "matchDepNames": ["Flask"],
               "prPriority": 4
             }
         ]
@@ -30,11 +30,11 @@
     "js": {
         "packageRules": [
             {
-              "matchPackageNames": ["terser"],
+              "matchDepNames": ["terser"],
               "prPriority": 1
             },
             {
-              "matchPackageNames": ["elm"],
+              "matchDepNames": ["elm"],
               "prPriority": 2
             }
         ]
