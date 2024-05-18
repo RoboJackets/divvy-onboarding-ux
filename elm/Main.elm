@@ -20,6 +20,7 @@ import String
 import Svg exposing (Svg, path, svg)
 import Svg.Attributes exposing (d)
 import Task
+import Time exposing (..)
 import Tuple exposing (..)
 import Url
 import Url.Builder
@@ -109,6 +110,25 @@ statesMap =
 
 
 
+-- DURATIONS
+
+
+threeDays : Int
+threeDays =
+    1000 * 60 * 60 * 24 * 3
+
+
+sevenDays : Int
+sevenDays =
+    1000 * 60 * 60 * 24 * 7
+
+
+twentyOneDays : Int
+twentyOneDays =
+    1000 * 60 * 60 * 24 * 21
+
+
+
 -- TYPES
 
 
@@ -180,6 +200,8 @@ type alias Model =
     , googleMapsApiKey : String
     , googleClientId : String
     , googleOneTapLoginUri : String
+    , time : Time.Posix
+    , zone : Time.Zone
     , nextAction : NextAction
     }
 
@@ -210,6 +232,8 @@ type Msg
     | EmailVerificationButtonClicked
     | PlaceChanged Value
     | GoogleAddressValidationResultReceived (Result Http.Error GoogleAddressValidation)
+    | SetTime Time.Posix
+    | SetZone Time.Zone
 
 
 
@@ -232,7 +256,9 @@ init : Value -> Url.Url -> Nav.Key -> ( Model, Cmd Msg )
 init flags url key =
     ( buildInitialModel flags
     , Cmd.batch
-        [ initializeAutocomplete (String.trim (Result.withDefault "" (decodeValue (at [ "serverData", "googleMapsApiKey" ] string) flags)))
+        [ Task.perform SetTime Time.now
+        , Task.perform SetZone Time.here
+        , initializeAutocomplete (String.trim (Result.withDefault "" (decodeValue (at [ "serverData", "googleMapsApiKey" ] string) flags)))
         , if showOneTap (buildInitialModel flags) then
             initializeOneTap True
 
@@ -584,6 +610,22 @@ update msg model =
                     submitForm True
             )
 
+        SetTime time ->
+            ( { model
+                | time = time
+                , nextAction = NoOpNextAction
+              }
+            , Cmd.none
+            )
+
+        SetZone zone ->
+            ( { model
+                | zone = zone
+                , nextAction = NoOpNextAction
+              }
+            , Cmd.none
+            )
+
 
 subscriptions : Model -> Sub Msg
 subscriptions _ =
@@ -766,7 +808,7 @@ view model =
                     , div [ class "invalid-feedback" ]
                         [ text (feedbackText (validateManager model.managerId (Dict.keys model.managerOptions) model.selfId)) ]
                     , div [ class "form-text", class "mb-3" ]
-                        [ text "Your manager will be responsible for reviewing and approving your credit card transactions and reimbursement requests. This should typically be your project manager." ]
+                        [ text "Your manager will be responsible for reviewing your credit card transactions and reimbursement requests. This should typically be your project manager." ]
                     ]
                 , div [ class "col-12" ]
                     [ div [ class "form-check" ]
@@ -783,7 +825,7 @@ view model =
                         , label [ for "order_physical_card", class "form-check-label" ]
                             [ text "Order a physical card" ]
                         , div [ class "form-text", class "mb-3" ]
-                            [ text "We recommend a physical card for everyone. You will only be able to use it once you activate it ", strong [] [ text " and " ], text " are added to a budget. If you choose not to order one now, you can do so within BILL Spend & Expense later on." ]
+                            [ text "We recommend a physical card for everyone. You will only be able to use it once you activate it ", strong [] [ text " and " ], text " are added to a budget. If you choose not to order one now, you can do so within BILL Spend & Expense later." ]
                         ]
                     ]
                 , div [ class "col-12", classList [ ( "d-none", not model.orderPhysicalCard ) ] ]
@@ -799,7 +841,7 @@ view model =
                             ]
                             []
                         , label [ for "usps_first_class", class "form-check-label" ] [ text "Standard shipping" ]
-                        , div [ class "form-text" ] [ strong [] [ text "Free " ], text " • No tracking • Typically arrives in 2-3 weeks" ]
+                        , div [ class "form-text" ] [ strong [] [ text "Free " ], text (" • No tracking • Estimated delivery by " ++ formatTime model.zone (millisToPosix (posixToMillis model.time + twentyOneDays))) ]
                         ]
                     , div [ class "form-check", class "mb-2" ]
                         [ input
@@ -813,7 +855,7 @@ view model =
                             ]
                             []
                         , label [ for "fedex_2day", class "form-check-label" ] [ text "Expedited shipping" ]
-                        , div [ class "form-text" ] [ strong [] [ text "$20 fee" ], text " paid by RoboJackets • FedEx tracking • Typically arrives within a week" ]
+                        , div [ class "form-text" ] [ strong [] [ text "$20 fee paid by RoboJackets" ], text (" • FedEx tracking • Estimated delivery by " ++ formatTime model.zone (millisToPosix (posixToMillis model.time + sevenDays))) ]
                         ]
                     , div [ class "form-check", class "mb-3" ]
                         [ input
@@ -827,7 +869,7 @@ view model =
                             ]
                             []
                         , label [ for "fedex_overnight", class "form-check-label" ] [ text "Rush shipping" ]
-                        , div [ class "form-text" ] [ strong [] [ text "$50 fee" ], text " paid by RoboJackets • FedEx tracking • Typically arrives within 3 days" ]
+                        , div [ class "form-text" ] [ strong [] [ text "$50 fee paid by RoboJackets" ], text (" • FedEx tracking • Estimated delivery by " ++ formatTime model.zone (millisToPosix (posixToMillis model.time + threeDays))) ]
                         ]
                     ]
                 , div [ class "col-12", classList [ ( "d-none", not model.orderPhysicalCard ) ] ]
@@ -1626,6 +1668,8 @@ buildInitialModel value =
         (String.trim (Result.withDefault "" (decodeValue (at [ "serverData", "googleMapsApiKey" ] string) value)))
         (String.trim (Result.withDefault "" (decodeValue (at [ "serverData", "googleClientId" ] string) value)))
         (String.trim (Result.withDefault "" (decodeValue (at [ "serverData", "googleOneTapLoginUri" ] string) value)))
+        (Time.millisToPosix 0)
+        Time.utc
         NoOpNextAction
 
 
@@ -1666,6 +1710,72 @@ showOneTap model =
 
                 Nothing ->
                     False
+
+
+formatTime : Zone -> Posix -> String
+formatTime zone time =
+    (case toWeekday zone time of
+        Mon ->
+            "Monday"
+
+        Tue ->
+            "Tuesday"
+
+        Wed ->
+            "Wednesday"
+
+        Thu ->
+            "Thursday"
+
+        Fri ->
+            "Friday"
+
+        Sat ->
+            "Saturday"
+
+        Sun ->
+            "Sunday"
+    )
+        ++ ", "
+        ++ (case toMonth zone time of
+                Jan ->
+                    "January"
+
+                Feb ->
+                    "February"
+
+                Mar ->
+                    "March"
+
+                Apr ->
+                    "April"
+
+                May ->
+                    "May"
+
+                Jun ->
+                    "June"
+
+                Jul ->
+                    "July"
+
+                Aug ->
+                    "August"
+
+                Sep ->
+                    "September"
+
+                Oct ->
+                    "October"
+
+                Nov ->
+                    "November"
+
+                Dec ->
+                    "December"
+           )
+        ++ " "
+        ++ String.fromInt (toDay zone time)
 
 
 
