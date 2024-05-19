@@ -1241,7 +1241,7 @@ validateAddressLineTwo addressLineTwo required campusAddress =
             && String.trim (String.toLower addressLineTwo)
             /= "mrdc room 1312"
     then
-        Invalid "For delivery to the MRDC loading dock, use Room 1312 for address line two"
+        Invalid "For delivery to the MRDC loading dock, use Room 1312"
 
     else
         Valid
