@@ -5,7 +5,7 @@ Last Name: {{ request.form["last_name"] }}
 Email Address: {{ request.form["email_address"] }}
 Manager: {{ manager }}
 {% if "order_physical_card" in request.form %}Order Physical Card: Yes
-Shipping: {{ request.form["shipping_option"].capitalize() }}
+Shipping Method: {{ request.form["shipping_method"] }}
 Address:
     {{ request.form["address_line_one"] }}{% if request.form["address_line_two"] %}
     {{ request.form["address_line_two"] }}{% endif %}

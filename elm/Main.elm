@@ -20,6 +20,7 @@ import String
 import Svg exposing (Svg, path, svg)
 import Svg.Attributes exposing (d)
 import Task
+import Time exposing (..)
 import Tuple exposing (..)
 import Url
 import Url.Builder
@@ -89,6 +90,21 @@ exclamationCircleIcon =
     svg [ Svg.Attributes.width "16", Svg.Attributes.height "16", Svg.Attributes.viewBox "0 0 16 16", Svg.Attributes.fill "currentColor", Svg.Attributes.style "top: -0.125em; position: relative;" ] [ path [ d "M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" ] [], path [ d "M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 4.995z" ] [] ]
 
 
+truckIcon : Svg msg
+truckIcon =
+    svg [ Svg.Attributes.width "16", Svg.Attributes.height "16", Svg.Attributes.viewBox "1 0 22 20", Svg.Attributes.fill "currentColor", Svg.Attributes.style "top: -0.125em; position: relative;" ] [ path [ d "M18,18.5A1.5,1.5 0 0,1 16.5,17A1.5,1.5 0 0,1 18,15.5A1.5,1.5 0 0,1 19.5,17A1.5,1.5 0 0,1 18,18.5M19.5,9.5L21.46,12H17V9.5M6,18.5A1.5,1.5 0 0,1 4.5,17A1.5,1.5 0 0,1 6,15.5A1.5,1.5 0 0,1 7.5,17A1.5,1.5 0 0,1 6,18.5M20,8H17V4H3C1.89,4 1,4.89 1,6V17H3A3,3 0 0,0 6,20A3,3 0 0,0 9,17H15A3,3 0 0,0 18,20A3,3 0 0,0 21,17H23V12L20,8Z" ] [] ]
+
+
+airplaneIcon : Svg msg
+airplaneIcon =
+    svg [ Svg.Attributes.width "16", Svg.Attributes.height "16", Svg.Attributes.viewBox "4 3.4 16.7 17.5", Svg.Attributes.fill "currentColor", Svg.Attributes.style "top: -0.125em; position: relative;" ] [ path [ d "M20.56 3.91C21.15 4.5 21.15 5.45 20.56 6.03L16.67 9.92L18.79 19.11L17.38 20.53L13.5 13.1L9.6 17L9.96 19.47L8.89 20.53L7.13 17.35L3.94 15.58L5 14.5L7.5 14.87L11.37 11L3.94 7.09L5.36 5.68L14.55 7.8L18.44 3.91C19 3.33 20 3.33 20.56 3.91Z" ] [] ]
+
+
+airplaneClockIcon : Svg msg
+airplaneClockIcon =
+    svg [ Svg.Attributes.width "21", Svg.Attributes.height "21", Svg.Attributes.viewBox "0 0 23 23", Svg.Attributes.fill "currentColor", Svg.Attributes.style "top: -0.125em; margin-bottom: -0.5em; margin-right: -0.315em; position: relative;" ] [ path [ d "M16 9C15.09 9 14.23 9.18 13.43 9.5L12.73 6.45L16.62 2.56C17.2 2 17.2 1.03 16.62 .44S15.08-.146 14.5 .44L10.61 4.33L1.41 2.21L0 3.62L7.43 7.5L3.54 11.4L1.06 11.05L0 12.11L3.18 13.87L4.95 17.06L6 16L5.66 13.5L9.55 9.63L10.57 11.59C9.59 12.79 9 14.33 9 16C9 19.87 12.13 23 16 23S23 19.87 23 16 19.87 9 16 9M16 21C13.24 21 11 18.76 11 16S13.24 11 16 11 21 13.24 21 16 18.76 21 16 21M16.5 16.25V12H15V17L18.61 19.16L19.36 17.94L16.5 16.25Z" ] [] ]
+
+
 
 -- MAPS
 
@@ -109,10 +125,19 @@ statesMap =
 
 
 
+-- DURATIONS
+
+
+dayInMilliseconds : Int
+dayInMilliseconds =
+    1000 * 60 * 60 * 24 * 1
+
+
+
 -- TYPES
 
 
-type ShippingOption
+type ShippingMethod
     = UspsFirstClass
     | FedEx2Day
     | FedExOvernight
@@ -163,7 +188,7 @@ type alias Model =
     , managerId : Maybe Int
     , selfId : Int
     , orderPhysicalCard : Bool
-    , shippingOption : ShippingOption
+    , shippingMethod : ShippingMethod
     , addressLineOne : String
     , addressLineTwo : String
     , city : String
@@ -180,6 +205,8 @@ type alias Model =
     , googleMapsApiKey : String
     , googleClientId : String
     , googleOneTapLoginUri : String
+    , time : Time.Posix
+    , zone : Time.Zone
     , nextAction : NextAction
     }
 
@@ -194,9 +221,9 @@ type Msg
     | EmailAddressInput String
     | ManagerInput Int
     | OrderPhysicalCardChecked Bool
-    | UspsFirstClassChecked Bool
-    | FedEx2DayChecked Bool
-    | FedExOvernightChecked Bool
+    | UspsFirstClassClicked
+    | FedEx2DayClicked
+    | FedExOvernightClicked
     | AddressLineOneInput String
     | AddressLineTwoInput String
     | CityInput String
@@ -210,6 +237,8 @@ type Msg
     | EmailVerificationButtonClicked
     | PlaceChanged Value
     | GoogleAddressValidationResultReceived (Result Http.Error GoogleAddressValidation)
+    | SetTime Time.Posix
+    | SetZone Time.Zone
 
 
 
@@ -232,7 +261,9 @@ init : Value -> Url.Url -> Nav.Key -> ( Model, Cmd Msg )
 init flags url key =
     ( buildInitialModel flags
     , Cmd.batch
-        [ initializeAutocomplete (String.trim (Result.withDefault "" (decodeValue (at [ "serverData", "googleMapsApiKey" ] string) flags)))
+        [ Task.perform SetTime Time.now
+        , Task.perform SetZone Time.here
+        , initializeAutocomplete (String.trim (Result.withDefault "" (decodeValue (at [ "serverData", "googleMapsApiKey" ] string) flags)))
         , if showOneTap (buildInitialModel flags) then
             initializeOneTap True
 
@@ -334,28 +365,28 @@ update msg model =
             , saveToLocalStorage (stringifyModel { model | orderPhysicalCard = orderPhysicalCard })
             )
 
-        UspsFirstClassChecked selected ->
+        UspsFirstClassClicked ->
             ( { model
-                | shippingOption = UspsFirstClass
+                | shippingMethod = UspsFirstClass
                 , nextAction = NoOpNextAction
               }
-            , saveToLocalStorage (stringifyModel { model | shippingOption = UspsFirstClass })
+            , saveToLocalStorage (stringifyModel { model | shippingMethod = UspsFirstClass })
             )
 
-        FedEx2DayChecked selected ->
+        FedEx2DayClicked ->
             ( { model
-                | shippingOption = FedEx2Day
+                | shippingMethod = FedEx2Day
                 , nextAction = NoOpNextAction
               }
-            , saveToLocalStorage (stringifyModel { model | shippingOption = FedEx2Day })
+            , saveToLocalStorage (stringifyModel { model | shippingMethod = FedEx2Day })
             )
 
-        FedExOvernightChecked selected ->
+        FedExOvernightClicked ->
             ( { model
-                | shippingOption = FedExOvernight
+                | shippingMethod = FedExOvernight
                 , nextAction = NoOpNextAction
               }
-            , saveToLocalStorage (stringifyModel { model | shippingOption = FedExOvernight })
+            , saveToLocalStorage (stringifyModel { model | shippingMethod = FedExOvernight })
             )
 
         AddressLineOneInput addressLineOne ->
@@ -584,6 +615,22 @@ update msg model =
                     submitForm True
             )
 
+        SetTime time ->
+            ( { model
+                | time = time
+                , nextAction = NoOpNextAction
+              }
+            , Cmd.none
+            )
+
+        SetZone zone ->
+            ( { model
+                | zone = zone
+                , nextAction = NoOpNextAction
+              }
+            , Cmd.none
+            )
+
 
 subscriptions : Model -> Sub Msg
 subscriptions _ =
@@ -766,7 +813,7 @@ view model =
                     , div [ class "invalid-feedback" ]
                         [ text (feedbackText (validateManager model.managerId (Dict.keys model.managerOptions) model.selfId)) ]
                     , div [ class "form-text", class "mb-3" ]
-                        [ text "Your manager will be responsible for reviewing and approving your credit card transactions and reimbursement requests. This should typically be your project manager." ]
+                        [ text "Your manager will be responsible for reviewing your credit card transactions and reimbursement requests. This should typically be your project manager." ]
                     ]
                 , div [ class "col-12" ]
                     [ div [ class "form-check" ]
@@ -783,51 +830,7 @@ view model =
                         , label [ for "order_physical_card", class "form-check-label" ]
                             [ text "Order a physical card" ]
                         , div [ class "form-text", class "mb-3" ]
-                            [ text "We recommend a physical card for everyone. You will only be able to use it once you activate it ", strong [] [ text " and " ], text " are added to a budget. If you choose not to order one now, you can do so within BILL Spend & Expense later on." ]
-                        ]
-                    ]
-                , div [ class "col-12", classList [ ( "d-none", not model.orderPhysicalCard ) ] ]
-                    [ div [ class "form-check", class "mb-2" ]
-                        [ input
-                            [ id "usps_first_class"
-                            , class "form-check-input"
-                            , type_ "radio"
-                            , name "shipping_option"
-                            , Html.Attributes.value "standard"
-                            , onCheck UspsFirstClassChecked
-                            , checked (model.shippingOption == UspsFirstClass)
-                            ]
-                            []
-                        , label [ for "usps_first_class", class "form-check-label" ] [ text "Standard shipping" ]
-                        , div [ class "form-text" ] [ strong [] [ text "Free " ], text " • No tracking • Typically arrives in 2-3 weeks" ]
-                        ]
-                    , div [ class "form-check", class "mb-2" ]
-                        [ input
-                            [ id "fedex_2day"
-                            , class "form-check-input"
-                            , type_ "radio"
-                            , name "shipping_option"
-                            , Html.Attributes.value "expedited"
-                            , onCheck FedEx2DayChecked
-                            , checked (model.shippingOption == FedEx2Day)
-                            ]
-                            []
-                        , label [ for "fedex_2day", class "form-check-label" ] [ text "Expedited shipping" ]
-                        , div [ class "form-text" ] [ strong [] [ text "$20 fee" ], text " paid by RoboJackets • FedEx tracking • Typically arrives within a week" ]
-                        ]
-                    , div [ class "form-check", class "mb-3" ]
-                        [ input
-                            [ id "fedex_overnight"
-                            , class "form-check-input"
-                            , type_ "radio"
-                            , name "shipping_option"
-                            , Html.Attributes.value "rush"
-                            , onCheck FedExOvernightChecked
-                            , checked (model.shippingOption == FedExOvernight)
-                            ]
-                            []
-                        , label [ for "fedex_overnight", class "form-check-label" ] [ text "Rush shipping" ]
-                        , div [ class "form-text" ] [ strong [] [ text "$50 fee" ], text " paid by RoboJackets • FedEx tracking • Typically arrives within 3 days" ]
+                            [ text "We recommend a physical card for everyone. You will only be able to use it once you activate it ", strong [] [ text " and " ], text " are added to a budget. If you choose not to order one now, you can do so within BILL Spend & Expense later." ]
                         ]
                     ]
                 , div [ class "col-12", classList [ ( "d-none", not model.orderPhysicalCard ) ] ]
@@ -962,6 +965,13 @@ view model =
                     , div [ class "invalid-feedback" ]
                         [ text (feedbackText (validateZipCode model.zip)) ]
                     ]
+                , div [ class "col-12 mb-3", classList [ ( "d-none", not model.orderPhysicalCard ) ] ]
+                    [ label [ class "form-label" ]
+                        [ text "Shipping Method" ]
+                    , div [ class "list-group" ]
+                        (List.map (shippingMethodToListGroupItem model.shippingMethod model.zone model.time) [ UspsFirstClass, FedEx2Day, FedExOvernight ])
+                    ]
+                , input [ type_ "hidden", name "shipping_method", Html.Attributes.value (shippingMethodToLabel model.shippingMethod) ] []
                 , div [ class "col-12", class "mb-3" ]
                     [ div [ class "form-check", class "mb-2" ]
                         [ input
@@ -1403,8 +1413,8 @@ stringifyModel model =
                         Json.Encode.null
               )
             , ( "orderPhysicalCard", Json.Encode.bool model.orderPhysicalCard )
-            , ( "shippingOption"
-              , case model.shippingOption of
+            , ( "shippingMethod"
+              , case model.shippingMethod of
                     UspsFirstClass ->
                         Json.Encode.string "UspsFirstClass"
 
@@ -1561,7 +1571,7 @@ buildInitialModel value =
         )
         (Result.withDefault -1 (decodeValue (at [ "serverData", "selfId" ] int) value))
         (Result.withDefault True (decodeString (field "orderPhysicalCard" bool) (Result.withDefault "{}" (decodeValue (field "localData" string) value))))
-        (case decodeString (field "shippingOption" string) (Result.withDefault "{}" (decodeValue (field "localData" string) value)) of
+        (case decodeString (field "shippingMethod" string) (Result.withDefault "{}" (decodeValue (field "localData" string) value)) of
             Ok "FedEx2Day" ->
                 FedEx2Day
 
@@ -1626,6 +1636,8 @@ buildInitialModel value =
         (String.trim (Result.withDefault "" (decodeValue (at [ "serverData", "googleMapsApiKey" ] string) value)))
         (String.trim (Result.withDefault "" (decodeValue (at [ "serverData", "googleClientId" ] string) value)))
         (String.trim (Result.withDefault "" (decodeValue (at [ "serverData", "googleOneTapLoginUri" ] string) value)))
+        (Time.millisToPosix 0)
+        Time.utc
         NoOpNextAction
 
 
@@ -1666,6 +1678,211 @@ showOneTap model =
 
                 Nothing ->
                     False
+
+
+formatTime : Zone -> Posix -> String
+formatTime zone time =
+    (case toWeekday zone time of
+        Mon ->
+            "Monday"
+
+        Tue ->
+            "Tuesday"
+
+        Wed ->
+            "Wednesday"
+
+        Thu ->
+            "Thursday"
+
+        Fri ->
+            "Friday"
+
+        Sat ->
+            "Saturday"
+
+        Sun ->
+            "Sunday"
+    )
+        ++ ", "
+        ++ (case toMonth zone time of
+                Jan ->
+                    "January"
+
+                Feb ->
+                    "February"
+
+                Mar ->
+                    "March"
+
+                Apr ->
+                    "April"
+
+                May ->
+                    "May"
+
+                Jun ->
+                    "June"
+
+                Jul ->
+                    "July"
+
+                Aug ->
+                    "August"
+
+                Sep ->
+                    "September"
+
+                Oct ->
+                    "October"
+
+                Nov ->
+                    "November"
+
+                Dec ->
+                    "December"
+           )
+        ++ " "
+        ++ String.fromInt (toDay zone time)
+
+
+estimateUspsFirstClassDeliveryTime : Zone -> Posix -> Posix
+estimateUspsFirstClassDeliveryTime zone time =
+    case toWeekday zone (millisToPosix (posixToMillis time + (21 * dayInMilliseconds))) of
+        Sun ->
+            millisToPosix (posixToMillis time + (20 * dayInMilliseconds))
+
+        _ ->
+            millisToPosix (posixToMillis time + (21 * dayInMilliseconds))
+
+
+estimateFedEx2DayDeliveryTime : Zone -> Posix -> Posix
+estimateFedEx2DayDeliveryTime zone time =
+    case toWeekday zone (millisToPosix (posixToMillis time + (5 * dayInMilliseconds))) of
+        Sat ->
+            millisToPosix (posixToMillis time + (7 * dayInMilliseconds))
+
+        Sun ->
+            millisToPosix (posixToMillis time + (6 * dayInMilliseconds))
+
+        _ ->
+            millisToPosix (posixToMillis time + (5 * dayInMilliseconds))
+
+
+estimateFedExOvernightDeliveryTime : Zone -> Posix -> Posix
+estimateFedExOvernightDeliveryTime zone time =
+    case toWeekday zone (millisToPosix (posixToMillis time + (3 * dayInMilliseconds))) of
+        Sat ->
+            millisToPosix (posixToMillis time + (5 * dayInMilliseconds))
+
+        Sun ->
+            millisToPosix (posixToMillis time + (4 * dayInMilliseconds))
+
+        _ ->
+            millisToPosix (posixToMillis time + (3 * dayInMilliseconds))
+
+
+shippingMethodToLabel : ShippingMethod -> String
+shippingMethodToLabel method =
+    case method of
+        UspsFirstClass ->
+            "USPS First Class"
+
+        FedEx2Day ->
+            "FedEx 2Day"
+
+        FedExOvernight ->
+            "FedEx Standard Overnight"
+
+
+shippingMethodToCost : ShippingMethod -> Int
+shippingMethodToCost method =
+    case method of
+        UspsFirstClass ->
+            0
+
+        FedEx2Day ->
+            20
+
+        FedExOvernight ->
+            50
+
+
+shippingMethodToOnClickMsg : ShippingMethod -> Msg
+shippingMethodToOnClickMsg method =
+    case method of
+        UspsFirstClass ->
+            UspsFirstClassClicked
+
+        FedEx2Day ->
+            FedEx2DayClicked
+
+        FedExOvernight ->
+            FedExOvernightClicked
+
+
+shippingMethodToDeliveryEstimateFn : ShippingMethod -> (Zone -> Posix -> Posix)
+shippingMethodToDeliveryEstimateFn method =
+    case method of
+        UspsFirstClass ->
+            estimateUspsFirstClassDeliveryTime
+
+        FedEx2Day ->
+            estimateFedEx2DayDeliveryTime
+
+        FedExOvernight ->
+            estimateFedExOvernightDeliveryTime
+
+
+shippingMethodToTrackingDescription : ShippingMethod -> String
+shippingMethodToTrackingDescription method =
+    case method of
+        UspsFirstClass ->
+            "No"
+
+        FedEx2Day ->
+            "FedEx"
+
+        FedExOvernight ->
+            "FedEx"
+
+
+shippingMethodToIcon : ShippingMethod -> Svg msg
+shippingMethodToIcon method =
+    case method of
+        UspsFirstClass ->
+            truckIcon
+
+        FedEx2Day ->
+            airplaneIcon
+
+        FedExOvernight ->
+            airplaneClockIcon
+
+
+shippingMethodToListGroupItem : ShippingMethod -> Zone -> Posix -> ShippingMethod -> Html Msg
+shippingMethodToListGroupItem selectedMethod zone time thisMethod =
+    div [ class "list-group-item", class "list-group-item-action", classList [ ( "active", selectedMethod == thisMethod ) ], onClick (shippingMethodToOnClickMsg thisMethod), style "cursor" "pointer" ]
+        [ h6 [ class "mb-1" ]
+            [ shippingMethodToIcon thisMethod
+            , text (noBreakSpace ++ noBreakSpace ++ shippingMethodToLabel thisMethod)
+            ]
+        , p [ class "mb-0" ] [ text ("Estimated delivery by " ++ formatTime zone (shippingMethodToDeliveryEstimateFn thisMethod zone time)) ]
+        , small []
+            [ text
+                ((case shippingMethodToCost thisMethod == 0 of
+                    True ->
+                        "Free"
+
+                    False ->
+                        "$" ++ String.fromInt (shippingMethodToCost thisMethod) ++ " fee paid by RoboJackets"
+                 )
+                    ++ " • "
+                    ++ shippingMethodToTrackingDescription thisMethod
+                    ++ " tracking"
+                )
+            ]
+        ]
 
 
 
