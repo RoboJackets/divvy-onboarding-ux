@@ -153,6 +153,7 @@ type NextAction
 type CampusAddress
     = StudentCenter
     | GraduateLivingCenter
+    | ManufacturingRelatedDisciplinesComplex
     | NotCampusAddress
 
 
@@ -301,6 +302,9 @@ update msg model =
                                     SubmitForm
 
                                 GraduateLivingCenter ->
+                                    SubmitForm
+
+                                ManufacturingRelatedDisciplinesComplex ->
                                     SubmitForm
 
                                 NotCampusAddress ->
@@ -1202,6 +1206,9 @@ validateAddressLineTwo addressLineTwo required campusAddress =
                         GraduateLivingCenter ->
                             "an apartment"
 
+                        ManufacturingRelatedDisciplinesComplex ->
+                            "a room"
+
                         NotCampusAddress ->
                             "an apartment or unit"
                    )
@@ -1221,6 +1228,20 @@ validateAddressLineTwo addressLineTwo required campusAddress =
             && not (Regex.contains graduateLivingCenterMailboxRegex (String.trim (String.toLower addressLineTwo)))
     then
         Invalid "This doesn't appear to be a valid apartment number"
+
+    else if
+        campusAddress
+            == ManufacturingRelatedDisciplinesComplex
+            && String.trim (String.toLower addressLineTwo)
+            /= "rm 1312"
+            && String.trim (String.toLower addressLineTwo)
+            /= "room 1312"
+            && String.trim (String.toLower addressLineTwo)
+            /= "mrdc rm 1312"
+            && String.trim (String.toLower addressLineTwo)
+            /= "mrdc room 1312"
+    then
+        Invalid "For delivery to the MRDC loading dock, use Room 1312 for address line two"
 
     else
         Valid
@@ -1533,6 +1554,18 @@ checkCampusAddress model =
             == "30318"
     then
         GraduateLivingCenter
+
+    else if
+        String.toLower (String.trim model.addressLineOne)
+            == "801 ferst dr nw"
+            && String.toLower (String.trim model.city)
+            == "atlanta"
+            && Maybe.withDefault "" model.state
+            == "GA"
+            && String.trim model.zip
+            == "30332"
+    then
+        ManufacturingRelatedDisciplinesComplex
 
     else
         NotCampusAddress
