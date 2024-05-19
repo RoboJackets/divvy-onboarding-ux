@@ -971,7 +971,23 @@ view model =
                     , div [ class "list-group" ]
                         (List.map (shippingMethodToListGroupItem model.shippingMethod model.zone model.time) [ UspsFirstClass, FedEx2Day, FedExOvernight ])
                     ]
-                , input [ type_ "hidden", name "shipping_method", Html.Attributes.value (shippingMethodToLabel model.shippingMethod) ] []
+                , input
+                    [ type_ "hidden"
+                    , name "shipping_method"
+                    , Html.Attributes.value
+                        (shippingMethodToLabel model.shippingMethod
+                            ++ " ("
+                            ++ (case shippingMethodToCost model.shippingMethod == 0 of
+                                    True ->
+                                        "Free"
+
+                                    False ->
+                                        "$" ++ String.fromInt (shippingMethodToCost model.shippingMethod)
+                               )
+                            ++ ")"
+                        )
+                    ]
+                    []
                 , div [ class "col-12", class "mb-3" ]
                     [ div [ class "form-check", class "mb-2" ]
                         [ input
