@@ -1567,6 +1567,18 @@ checkCampusAddress model =
     then
         ManufacturingRelatedDisciplinesComplex
 
+    else if
+        String.toLower (String.trim model.addressLineOne)
+            == "801 ferst dr"
+            && String.toLower (String.trim model.city)
+            == "atlanta"
+            && Maybe.withDefault "" model.state
+            == "GA"
+            && String.trim model.zip
+            == "30332"
+    then
+        ManufacturingRelatedDisciplinesComplex
+
     else
         NotCampusAddress
 
