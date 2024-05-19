@@ -132,7 +132,7 @@ twentyOneDays =
 -- TYPES
 
 
-type ShippingOption
+type ShippingMethod
     = UspsFirstClass
     | FedEx2Day
     | FedExOvernight
@@ -183,7 +183,7 @@ type alias Model =
     , managerId : Maybe Int
     , selfId : Int
     , orderPhysicalCard : Bool
-    , shippingOption : ShippingOption
+    , shippingMethod : ShippingMethod
     , addressLineOne : String
     , addressLineTwo : String
     , city : String
@@ -216,9 +216,9 @@ type Msg
     | EmailAddressInput String
     | ManagerInput Int
     | OrderPhysicalCardChecked Bool
-    | UspsFirstClassChecked Bool
-    | FedEx2DayChecked Bool
-    | FedExOvernightChecked Bool
+    | UspsFirstClassClicked
+    | FedEx2DayClicked
+    | FedExOvernightClicked
     | AddressLineOneInput String
     | AddressLineTwoInput String
     | CityInput String
@@ -360,28 +360,28 @@ update msg model =
             , saveToLocalStorage (stringifyModel { model | orderPhysicalCard = orderPhysicalCard })
             )
 
-        UspsFirstClassChecked selected ->
+        UspsFirstClassClicked ->
             ( { model
-                | shippingOption = UspsFirstClass
+                | shippingMethod = UspsFirstClass
                 , nextAction = NoOpNextAction
               }
-            , saveToLocalStorage (stringifyModel { model | shippingOption = UspsFirstClass })
+            , saveToLocalStorage (stringifyModel { model | shippingMethod = UspsFirstClass })
             )
 
-        FedEx2DayChecked selected ->
+        FedEx2DayClicked ->
             ( { model
-                | shippingOption = FedEx2Day
+                | shippingMethod = FedEx2Day
                 , nextAction = NoOpNextAction
               }
-            , saveToLocalStorage (stringifyModel { model | shippingOption = FedEx2Day })
+            , saveToLocalStorage (stringifyModel { model | shippingMethod = FedEx2Day })
             )
 
-        FedExOvernightChecked selected ->
+        FedExOvernightClicked ->
             ( { model
-                | shippingOption = FedExOvernight
+                | shippingMethod = FedExOvernight
                 , nextAction = NoOpNextAction
               }
-            , saveToLocalStorage (stringifyModel { model | shippingOption = FedExOvernight })
+            , saveToLocalStorage (stringifyModel { model | shippingMethod = FedExOvernight })
             )
 
         AddressLineOneInput addressLineOne ->
@@ -828,48 +828,34 @@ view model =
                             [ text "We recommend a physical card for everyone. You will only be able to use it once you activate it ", strong [] [ text " and " ], text " are added to a budget. If you choose not to order one now, you can do so within BILL Spend & Expense later." ]
                         ]
                     ]
-                , div [ class "col-12", classList [ ( "d-none", not model.orderPhysicalCard ) ] ]
-                    [ div [ class "form-check", class "mb-2" ]
-                        [ input
-                            [ id "usps_first_class"
-                            , class "form-check-input"
-                            , type_ "radio"
-                            , name "shipping_option"
-                            , Html.Attributes.value "standard"
-                            , onCheck UspsFirstClassChecked
-                            , checked (model.shippingOption == UspsFirstClass)
+                , div [ class "col-12 mb-3", classList [ ( "d-none", not model.orderPhysicalCard ) ] ]
+                    [ label [ class "form-label" ]
+                        [ text "Shipping Method" ]
+                    , div [ class "list-group" ]
+                        [ div [ class "list-group-item", class "list-group-item-action", classList [ ( "active", model.shippingMethod == UspsFirstClass ) ], onClick UspsFirstClassClicked, style "cursor" "pointer" ]
+                            [ div [ class "d-flex", class "w-100", class "justify-content-between" ]
+                                [ h6 [ class "mb-1" ]
+                                    [ text "USPS First Class" ]
+                                ]
+                            , p [ class "mb-0" ] [ text ("Estimated delivery by " ++ formatTime model.zone (millisToPosix (posixToMillis model.time + twentyOneDays))) ]
+                            , small [] [ text "Free | No tracking" ]
                             ]
-                            []
-                        , label [ for "usps_first_class", class "form-check-label" ] [ text "Standard shipping" ]
-                        , div [ class "form-text" ] [ strong [] [ text "Free " ], text (" • No tracking • Estimated delivery by " ++ formatTime model.zone (millisToPosix (posixToMillis model.time + twentyOneDays))) ]
-                        ]
-                    , div [ class "form-check", class "mb-2" ]
-                        [ input
-                            [ id "fedex_2day"
-                            , class "form-check-input"
-                            , type_ "radio"
-                            , name "shipping_option"
-                            , Html.Attributes.value "expedited"
-                            , onCheck FedEx2DayChecked
-                            , checked (model.shippingOption == FedEx2Day)
+                        , div [ class "list-group-item", class "list-group-item-action", classList [ ( "active", model.shippingMethod == FedEx2Day ) ], onClick FedEx2DayClicked, style "cursor" "pointer" ]
+                            [ div [ class "d-flex", class "w-100", class "justify-content-between" ]
+                                [ h6 [ class "mb-1" ]
+                                    [ text "FedEx 2Day" ]
+                                ]
+                            , p [ class "mb-0" ] [ text ("Estimated delivery by " ++ formatTime model.zone (millisToPosix (posixToMillis model.time + sevenDays))) ]
+                            , small [] [ text "$20 fee paid by RoboJackets | FedEx tracking" ]
                             ]
-                            []
-                        , label [ for "fedex_2day", class "form-check-label" ] [ text "Expedited shipping" ]
-                        , div [ class "form-text" ] [ strong [] [ text "$20 fee paid by RoboJackets" ], text (" • FedEx tracking • Estimated delivery by " ++ formatTime model.zone (millisToPosix (posixToMillis model.time + sevenDays))) ]
-                        ]
-                    , div [ class "form-check", class "mb-3" ]
-                        [ input
-                            [ id "fedex_overnight"
-                            , class "form-check-input"
-                            , type_ "radio"
-                            , name "shipping_option"
-                            , Html.Attributes.value "rush"
-                            , onCheck FedExOvernightChecked
-                            , checked (model.shippingOption == FedExOvernight)
+                        , div [ class "list-group-item", class "list-group-item-action", classList [ ( "active", model.shippingMethod == FedExOvernight ) ], onClick FedExOvernightClicked, style "cursor" "pointer" ]
+                            [ div [ class "d-flex", class "w-100", class "justify-content-between" ]
+                                [ h6 [ class "mb-1" ]
+                                    [ text "FedEx Standard Overnight" ]
+                                ]
+                            , p [ class "mb-0" ] [ text ("Estimated delivery by " ++ formatTime model.zone (millisToPosix (posixToMillis model.time + threeDays))) ]
+                            , small [] [ text "$50 fee paid by RoboJackets | FedEx tracking" ]
                             ]
-                            []
-                        , label [ for "fedex_overnight", class "form-check-label" ] [ text "Rush shipping" ]
-                        , div [ class "form-text" ] [ strong [] [ text "$50 fee paid by RoboJackets" ], text (" • FedEx tracking • Estimated delivery by " ++ formatTime model.zone (millisToPosix (posixToMillis model.time + threeDays))) ]
                         ]
                     ]
                 , div [ class "col-12", classList [ ( "d-none", not model.orderPhysicalCard ) ] ]
@@ -1445,8 +1431,8 @@ stringifyModel model =
                         Json.Encode.null
               )
             , ( "orderPhysicalCard", Json.Encode.bool model.orderPhysicalCard )
-            , ( "shippingOption"
-              , case model.shippingOption of
+            , ( "shippingMethod"
+              , case model.shippingMethod of
                     UspsFirstClass ->
                         Json.Encode.string "UspsFirstClass"
 
@@ -1603,7 +1589,7 @@ buildInitialModel value =
         )
         (Result.withDefault -1 (decodeValue (at [ "serverData", "selfId" ] int) value))
         (Result.withDefault True (decodeString (field "orderPhysicalCard" bool) (Result.withDefault "{}" (decodeValue (field "localData" string) value))))
-        (case decodeString (field "shippingOption" string) (Result.withDefault "{}" (decodeValue (field "localData" string) value)) of
+        (case decodeString (field "shippingMethod" string) (Result.withDefault "{}" (decodeValue (field "localData" string) value)) of
             Ok "FedEx2Day" ->
                 FedEx2Day
 
