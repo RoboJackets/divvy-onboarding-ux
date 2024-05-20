@@ -1819,28 +1819,28 @@ estimateUspsFirstClassDeliveryTime zone time =
 
 estimateFedEx2DayDeliveryTime : Zone -> Posix -> Posix
 estimateFedEx2DayDeliveryTime zone time =
-    case toWeekday zone (millisToPosix (posixToMillis time + (4.5 * dayInMilliseconds))) of
+    case toWeekday zone (millisToPosix (posixToMillis time + (4.5 * (toFloat dayInMilliseconds)))) of
         Sat ->
-            millisToPosix (posixToMillis time + (6.5 * dayInMilliseconds))
+            millisToPosix (posixToMillis time + (6.5 * (toFloat dayInMilliseconds)))
 
         Sun ->
-            millisToPosix (posixToMillis time + (5.5 * dayInMilliseconds))
+            millisToPosix (posixToMillis time + (5.5 * (toFloat dayInMilliseconds)))
 
         _ ->
-            millisToPosix (posixToMillis time + (4.5 * dayInMilliseconds))
+            millisToPosix (posixToMillis time + (4.5 * (toFloat dayInMilliseconds)))
 
 
 estimateFedExOvernightDeliveryTime : Zone -> Posix -> Posix
 estimateFedExOvernightDeliveryTime zone time =
-    case toWeekday zone (millisToPosix (posixToMillis time + (2.5 * dayInMilliseconds))) of
+    case toWeekday zone (millisToPosix (posixToMillis time + (2.5 * (toFloat dayInMilliseconds)))) of
         Sat ->
-            millisToPosix (posixToMillis time + (4.5 * dayInMilliseconds))
+            millisToPosix (posixToMillis time + (4.5 * (toFloat dayInMilliseconds)))
 
         Sun ->
-            millisToPosix (posixToMillis time + (3.5 * dayInMilliseconds))
+            millisToPosix (posixToMillis time + (3.5 * (toFloat dayInMilliseconds)))
 
         _ ->
-            millisToPosix (posixToMillis time + (2.5 * dayInMilliseconds))
+            millisToPosix (posixToMillis time + (2.5 * (toFloat dayInMilliseconds)))
 
 
 shippingMethodToLabel : ShippingMethod -> String
