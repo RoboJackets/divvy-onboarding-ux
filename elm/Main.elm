@@ -1809,38 +1809,43 @@ formatTime zone time =
 
 estimateUspsFirstClassDeliveryTime : Zone -> Posix -> Posix
 estimateUspsFirstClassDeliveryTime zone time =
-    case toWeekday zone (millisToPosix (posixToMillis time + (21 * dayInMilliseconds))) of
+    case toWeekday zone (addDays time 20.5) of
         Sun ->
-            millisToPosix (posixToMillis time + (20 * dayInMilliseconds))
+            addDays time 19.5
 
         _ ->
-            millisToPosix (posixToMillis time + (21 * dayInMilliseconds))
+            addDays time 20.5
 
 
 estimateFedEx2DayDeliveryTime : Zone -> Posix -> Posix
 estimateFedEx2DayDeliveryTime zone time =
-    case toWeekday zone (millisToPosix (posixToMillis time + (4.5 * (toFloat dayInMilliseconds)))) of
+    case toWeekday zone (addDays time 4.5) of
         Sat ->
-            millisToPosix (posixToMillis time + (6.5 * (toFloat dayInMilliseconds)))
+            addDays time 6.5
 
         Sun ->
-            millisToPosix (posixToMillis time + (5.5 * (toFloat dayInMilliseconds)))
+            addDays time 5.5
 
         _ ->
-            millisToPosix (posixToMillis time + (4.5 * (toFloat dayInMilliseconds)))
+            addDays time 4.5
 
 
 estimateFedExOvernightDeliveryTime : Zone -> Posix -> Posix
 estimateFedExOvernightDeliveryTime zone time =
-    case toWeekday zone (millisToPosix (posixToMillis time + (2.5 * (toFloat dayInMilliseconds)))) of
+    case toWeekday zone (addDays time 2.5) of
         Sat ->
-            millisToPosix (posixToMillis time + (4.5 * (toFloat dayInMilliseconds)))
+            addDays time 4.5
 
         Sun ->
-            millisToPosix (posixToMillis time + (3.5 * (toFloat dayInMilliseconds)))
+            addDays time 3.5
 
         _ ->
-            millisToPosix (posixToMillis time + (2.5 * (toFloat dayInMilliseconds)))
+            addDays time 2.5
+
+
+addDays : Posix -> Float -> Posix
+addDays input days =
+    millisToPosix (posixToMillis input + ceiling (days * toFloat dayInMilliseconds))
 
 
 shippingMethodToLabel : ShippingMethod -> String
