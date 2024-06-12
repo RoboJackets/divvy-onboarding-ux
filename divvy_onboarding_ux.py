@@ -12,8 +12,8 @@ from authlib.integrations.flask_client import OAuth  # type: ignore
 from flask import Flask, Response, redirect, render_template, request, session, url_for
 from flask.helpers import get_debug_flag
 
-from google.auth.transport import requests  # type: ignore
-from google.oauth2 import id_token  # type: ignore
+from google.auth.transport import requests
+from google.oauth2 import id_token
 
 from ldap3 import Connection, Server
 
@@ -457,8 +457,8 @@ def verify_google_onetap() -> Response:
         }
     )
 
-    userinfo = id_token.verify_oauth2_token(
-        request.form["credential"], requests.Request(), app.config["GOOGLE_CLIENT_ID"]
+    userinfo = id_token.verify_oauth2_token(  # type: ignore
+        request.form["credential"], requests.Request(), app.config["GOOGLE_CLIENT_ID"]  # type: ignore  # noqa: E501
     )
 
     if userinfo["hd"] != "robojackets.org":
