@@ -1,4 +1,4 @@
-# syntax = docker/dockerfile:1.7
+# syntax = docker/dockerfile:1.8
 
 FROM node:21.7.3 as frontend
 
