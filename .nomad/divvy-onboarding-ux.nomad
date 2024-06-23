@@ -62,11 +62,6 @@ job "divvy-onboarding-ux" {
   type = "service"
 
   group "divvy-onboarding-ux" {
-    volume "assets" {
-      type = "host"
-      source = "assets"
-    }
-
     network {
       port "http" {}
     }
@@ -95,17 +90,23 @@ job "divvy-onboarding-ux" {
           "-c",
           trimspace(file("scripts/prestart.sh"))
         ]
+
+        mount {
+          type = "volume"
+          target = "/assets/"
+          source = "assets"
+          readonly = false
+
+          volume_options {
+            no_copy = true
+          }
+        }
       }
 
       resources {
         cpu = 100
         memory = 128
         memory_max = 2048
-      }
-
-      volume_mount {
-        volume = "assets"
-        destination = "/assets/"
       }
     }
 
