@@ -211,6 +211,13 @@ job "divvy-onboarding-ux" {
     }
   }
 
+  reschedule {
+    delay = "10s"
+    delay_function = "fibonacci"
+    max_delay = "60s"
+    unlimited = true
+  }
+
   update {
     healthy_deadline = "5m"
     progress_deadline = "10m"
