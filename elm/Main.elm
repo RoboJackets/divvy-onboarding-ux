@@ -974,7 +974,7 @@ view model =
                         [ text "Shipping Method" ]
                     , div [ class "list-group" ]
                         (List.map (shippingMethodToListGroupItem model.shippingMethod model.zone model.time) [ UspsFirstClass, FedEx2Day, FedExOvernight ])
-                    , div [ class "form-text", class "mb-3", class "mt-2" ]
+                    , div [ class "form-text", class "mb-1", class "mt-2" ]
                         [ text "Estimated delivery dates include 1-2 days to process your request and print your card before the carrier receives it." ]
                     ]
                 , input
