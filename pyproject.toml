@@ -14,7 +14,7 @@ requests = "2.32.3"
 ldap3 = "2.9.1"
 uwsgi = "2.0.26"
 sentry-sdk = {extras = ["pure-eval", "flask"], version = "2.6.0"}
-google-auth = "2.30.0"
+google-auth = "2.31.0"
 
 [tool.poetry.group.dev.dependencies]
 black = "24.4.2"
