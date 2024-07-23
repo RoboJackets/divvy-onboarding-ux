@@ -1823,13 +1823,22 @@ estimateFedEx2DayDeliveryTime : Zone -> Posix -> Posix
 estimateFedEx2DayDeliveryTime zone time =
     case toWeekday zone (addDays time 4.5) of
         Sat ->
-            addDays time 6.5
+            if estimateFedExOvernightDeliveryTime zone time == addDays time 6.5 then
+                addDays time 7.5
+            else
+                addDays time 6.5
 
         Sun ->
-            addDays time 5.5
+            if estimateFedExOvernightDeliveryTime zone time == addDays time 5.5 then
+                addDays time 6.5
+            else
+                addDays time 5.5
 
         _ ->
-            addDays time 4.5
+            if estimateFedExOvernightDeliveryTime zone time == addDays time 4.5 then
+                addDays time 5.5
+            else
+                addDays time 4.5
 
 
 estimateFedExOvernightDeliveryTime : Zone -> Posix -> Posix
