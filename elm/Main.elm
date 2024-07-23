@@ -1825,18 +1825,21 @@ estimateFedEx2DayDeliveryTime zone time =
         Sat ->
             if estimateFedExOvernightDeliveryTime zone time == addDays time 6.5 then
                 addDays time 7.5
+
             else
                 addDays time 6.5
 
         Sun ->
             if estimateFedExOvernightDeliveryTime zone time == addDays time 5.5 then
                 addDays time 6.5
+
             else
                 addDays time 5.5
 
         _ ->
             if estimateFedExOvernightDeliveryTime zone time == addDays time 4.5 then
                 addDays time 5.5
+
             else
                 addDays time 4.5
 
