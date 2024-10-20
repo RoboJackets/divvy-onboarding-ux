@@ -209,6 +209,7 @@ type alias Model =
     , time : Time.Posix
     , zone : Time.Zone
     , nextAction : NextAction
+    , showRampBanner : Bool
     }
 
 
@@ -240,6 +241,7 @@ type Msg
     | GoogleAddressValidationResultReceived (Result Http.Error GoogleAddressValidation)
     | SetTime Time.Posix
     | SetZone Time.Zone
+    | DismissRampBanner
 
 
 
@@ -635,6 +637,14 @@ update msg model =
             , Cmd.none
             )
 
+        DismissRampBanner ->
+            ( { model
+                | showRampBanner = False
+                , nextAction = NoOpNextAction
+              }
+            , saveToLocalStorage (stringifyModel { model | showRampBanner = False })
+            )
+
 
 subscriptions : Model -> Sub Msg
 subscriptions _ =
@@ -658,6 +668,14 @@ view model =
                     [ text "BILL Spend & Expense"
                     ]
                 , text " to issue corporate credit cards and manage reimbursements. We need some information from you to create your BILL Spend & Expense account."
+                ]
+            , div [ class "alert", class "alert-primary", class "alert-dismissible", class "mb-4", classList [ ( "d-none", not model.showRampBanner ) ] ]
+                [ text "RoboJackets is currently piloting "
+                , a [ href "https://ramp.com", class "alert-link" ] [ text "Ramp" ]
+                , text " to replace BILL Spend & Expense. Please check with your project manager if you should "
+                , a [ href "https://ramp.robojackets.org", class "alert-link" ] [ text "request a Ramp account" ]
+                , text " instead."
+                , button [ type_ "button", class "btn-close", onClick DismissRampBanner ] []
                 ]
             , Html.form
                 [ class "row"
@@ -1475,6 +1493,7 @@ stringifyModel model =
                         Json.Encode.null
               )
             , ( "zip", Json.Encode.string (String.trim model.zip) )
+            , ( "showRampBanner", Json.Encode.bool model.showRampBanner )
             ]
         )
 
@@ -1702,6 +1721,7 @@ buildInitialModel value =
         (Time.millisToPosix 0)
         Time.utc
         NoOpNextAction
+        (Result.withDefault True (decodeString (field "showRampBanner" bool) (Result.withDefault "{}" (decodeValue (field "localData" string) value))))
 
 
 stringStringTupleToMaybeIntStringTuple : ( String, String ) -> Maybe ( Int, String )
