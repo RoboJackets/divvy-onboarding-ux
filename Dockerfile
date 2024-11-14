@@ -1,6 +1,6 @@
 # syntax = docker/dockerfile:1.11
 
-FROM node:21.7.3 as frontend
+FROM node:21.7.3 AS frontend
 
 RUN npm install -g npm@latest
 
@@ -15,7 +15,7 @@ RUN set -eux && \
     npm ci --no-progress && \
     npm run build
 
-FROM python:3.12-slim-bullseye
+FROM python:3.13-slim-bullseye
 
 ENV DEBIAN_FRONTEND=noninteractive \
     PATH="${PATH}:/root/.local/bin" \
@@ -44,6 +44,6 @@ RUN set -eux && \
     POETRY_VIRTUALENVS_CREATE=false poetry install --only main --no-root --no-interaction --no-ansi && \
     zopfli --gzip -v --i10 /app/static/app.js && \
     touch /app/static/app.js.gz /app/static/app.js && \
-    sed -i 's/return self.request.get_json()/        return self.request.get_json(silent=True)/g' /usr/local/lib/python3.12/site-packages/sentry_sdk/integrations/flask.py
+    sed -i 's/return self.request.get_json()/        return self.request.get_json(silent=True)/g' /usr/local/lib/python3.13/site-packages/sentry_sdk/integrations/flask.py
 
 USER uwsgi
