@@ -964,7 +964,7 @@ view model =
                         [ text (feedbackText (validateState model.state)) ]
                     ]
                 , div [ class "col-md-3", class "col-4", class "mb-3", classList [ ( "d-none", not model.orderPhysicalCard ) ] ]
-                    [ label [ for "zip", class "form-label" ] [ text "ZIP Code" ]
+                    [ label [ for "zip_code", class "form-label" ] [ text "ZIP Code" ]
                     , input
                         [ type_ "text"
                         , toAttribute (inputmode numeric)
