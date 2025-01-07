@@ -852,7 +852,7 @@ view model =
                         , label [ for "order_physical_card", class "form-check-label" ]
                             [ text "Order a physical card" ]
                         , div [ class "form-text", class "mb-3" ]
-                            [ text "We recommend a physical card for everyone. You will only be able to use it once you activate it ", strong [] [ text " and " ], text " are added to a budget. If you choose not to order one now, you can do so within BILL Spend & Expense later." ]
+                            [ text "You will only be able to use your physical card once you activate it ", strong [] [ text " and " ], text " are added to a budget. If you choose not to order one now, you can do so within BILL Spend & Expense later." ]
                         ]
                     ]
                 , div [ class "col-12", classList [ ( "d-none", not model.orderPhysicalCard ) ] ]
