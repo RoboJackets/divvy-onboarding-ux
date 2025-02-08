@@ -37,16 +37,6 @@ nameRegex =
     Maybe.withDefault Regex.never (Regex.fromString "^[a-zA-Z ]+$")
 
 
-studentCenterMailboxRegex : Regex.Regex
-studentCenterMailboxRegex =
-    Maybe.withDefault Regex.never (Regex.fromString "^\\d{6} georgia tech station$")
-
-
-graduateLivingCenterMailboxRegex : Regex.Regex
-graduateLivingCenterMailboxRegex =
-    Maybe.withDefault Regex.never (Regex.fromString "^(apt|apartment) [1-6][0-2][0-9][a-d]$")
-
-
 
 -- STRINGS
 
@@ -90,21 +80,6 @@ exclamationCircleIcon =
     svg [ Svg.Attributes.width "16", Svg.Attributes.height "16", Svg.Attributes.viewBox "0 0 16 16", Svg.Attributes.fill "currentColor", Svg.Attributes.style "top: -0.125em; position: relative;" ] [ path [ d "M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" ] [], path [ d "M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 4.995z" ] [] ]
 
 
-truckIcon : Svg msg
-truckIcon =
-    svg [ Svg.Attributes.width "16", Svg.Attributes.height "16", Svg.Attributes.viewBox "1 0 22 20", Svg.Attributes.fill "currentColor", Svg.Attributes.style "top: -0.125em; position: relative;" ] [ path [ d "M18,18.5A1.5,1.5 0 0,1 16.5,17A1.5,1.5 0 0,1 18,15.5A1.5,1.5 0 0,1 19.5,17A1.5,1.5 0 0,1 18,18.5M19.5,9.5L21.46,12H17V9.5M6,18.5A1.5,1.5 0 0,1 4.5,17A1.5,1.5 0 0,1 6,15.5A1.5,1.5 0 0,1 7.5,17A1.5,1.5 0 0,1 6,18.5M20,8H17V4H3C1.89,4 1,4.89 1,6V17H3A3,3 0 0,0 6,20A3,3 0 0,0 9,17H15A3,3 0 0,0 18,20A3,3 0 0,0 21,17H23V12L20,8Z" ] [] ]
-
-
-airplaneIcon : Svg msg
-airplaneIcon =
-    svg [ Svg.Attributes.width "16", Svg.Attributes.height "16", Svg.Attributes.viewBox "4 3.4 16.7 17.5", Svg.Attributes.fill "currentColor", Svg.Attributes.style "top: -0.125em; position: relative;" ] [ path [ d "M20.56 3.91C21.15 4.5 21.15 5.45 20.56 6.03L16.67 9.92L18.79 19.11L17.38 20.53L13.5 13.1L9.6 17L9.96 19.47L8.89 20.53L7.13 17.35L3.94 15.58L5 14.5L7.5 14.87L11.37 11L3.94 7.09L5.36 5.68L14.55 7.8L18.44 3.91C19 3.33 20 3.33 20.56 3.91Z" ] [] ]
-
-
-airplaneClockIcon : Svg msg
-airplaneClockIcon =
-    svg [ Svg.Attributes.width "21.5", Svg.Attributes.height "21.5", Svg.Attributes.viewBox "0 0 23 23.5", Svg.Attributes.fill "currentColor", Svg.Attributes.style "top: -0.125em; margin-bottom: -0.6em; margin-right: -0.345em; position: relative;" ] [ path [ d "M16 9C15.09 9 14.23 9.18 13.43 9.5L12.73 6.45L16.62 2.56C17.2 2 17.2 1.03 16.62 .44S15.08-.146 14.5 .44L10.61 4.33L1.41 2.21L0 3.62L7.43 7.5L3.54 11.4L1.06 11.05L0 12.11L3.18 13.87L4.95 17.06L6 16L5.66 13.5L9.55 9.63L10.57 11.59C9.59 12.79 9 14.33 9 16C9 19.87 12.13 23 16 23S23 19.87 23 16 19.87 9 16 9M16 21C13.24 21 11 18.76 11 16S13.24 11 16 11 21 13.24 21 16 18.76 21 16 21M16.5 16.25V12H15V17L18.61 19.16L19.36 17.94L16.5 16.25Z" ] [] ]
-
-
 
 -- MAPS
 
@@ -117,11 +92,6 @@ emailProviderIcon =
 emailProviderName : Dict String String
 emailProviderName =
     Dict.fromList [ ( "robojackets.org", "Google" ), ( "gatech.edu", "Microsoft" ) ]
-
-
-statesMap : Dict String String
-statesMap =
-    Dict.fromList [ ( "AK", "Alaska" ), ( "AL", "Alabama" ), ( "AR", "Arkansas" ), ( "AZ", "Arizona" ), ( "CA", "California" ), ( "CO", "Colorado" ), ( "CT", "Connecticut" ), ( "DC", "District of Columbia" ), ( "DE", "Delaware" ), ( "FL", "Florida" ), ( "GA", "Georgia" ), ( "HI", "Hawaii" ), ( "IA", "Iowa" ), ( "ID", "Idaho" ), ( "IL", "Illinois" ), ( "IN", "Indiana" ), ( "KS", "Kansas" ), ( "KY", "Kentucky" ), ( "LA", "Louisiana" ), ( "MA", "Massachusetts" ), ( "MD", "Maryland" ), ( "ME", "Maine" ), ( "MI", "Michigan" ), ( "MN", "Minnesota" ), ( "MO", "Missouri" ), ( "MS", "Mississippi" ), ( "MT", "Montana" ), ( "NC", "North Carolina" ), ( "ND", "North Dakota" ), ( "NE", "Nebraska" ), ( "NH", "New Hampshire" ), ( "NJ", "New Jersey" ), ( "NM", "New Mexico" ), ( "NV", "Nevada" ), ( "NY", "New York" ), ( "OH", "Ohio" ), ( "OK", "Oklahoma" ), ( "OR", "Oregon" ), ( "PA", "Pennsylvania" ), ( "RI", "Rhode Island" ), ( "SC", "South Carolina" ), ( "SD", "South Dakota" ), ( "TN", "Tennessee" ), ( "TX", "Texas" ), ( "UT", "Utah" ), ( "VA", "Virginia" ), ( "VT", "Vermont" ), ( "WA", "Washington" ), ( "WI", "Wisconsin" ), ( "WV", "West Virginia" ), ( "WY", "Wyoming" ) ]
 
 
 
@@ -137,24 +107,10 @@ dayInMilliseconds =
 -- TYPES
 
 
-type ShippingMethod
-    = UspsFirstClass
-    | FedEx2Day
-    | FedExOvernight
-
-
 type NextAction
     = RedirectToEmailVerification
-    | ValidateAddressWithGoogle
     | SubmitForm
     | NoOpNextAction
-
-
-type CampusAddress
-    = StudentCenter
-    | GraduateLivingCenter
-    | ManufacturingRelatedDisciplinesComplex
-    | NotCampusAddress
 
 
 type ValidationResult
@@ -188,26 +144,13 @@ type alias Model =
     , managerOptions : Dict Int String
     , managerId : Maybe Int
     , selfId : Int
-    , orderPhysicalCard : Bool
-    , shippingMethod : ShippingMethod
-    , addressLineOne : String
-    , addressLineTwo : String
-    , city : String
-    , state : Maybe String
-    , zip : String
-    , addressLineTwoRequired : Bool
-    , addressIsValid : Maybe Bool
-    , addressValidationInProgress : Bool
     , formSubmissionInProgress : Bool
     , acknowledgedCardPolicy : Bool
     , acknowledgedReimbursementPolicy : Bool
     , acknowledgedIdentityVerificationPolicy : Bool
     , showValidation : Bool
-    , googleMapsApiKey : String
     , googleClientId : String
     , googleOneTapLoginUri : String
-    , time : Time.Posix
-    , zone : Time.Zone
     , nextAction : NextAction
     , showRampBanner : Bool
     }
@@ -222,25 +165,12 @@ type Msg
     | LastNameInput String
     | EmailAddressInput String
     | ManagerInput Int
-    | OrderPhysicalCardChecked Bool
-    | UspsFirstClassClicked
-    | FedEx2DayClicked
-    | FedExOvernightClicked
-    | AddressLineOneInput String
-    | AddressLineTwoInput String
-    | CityInput String
-    | StateInput String
-    | ZipInput String
     | AcknowledgeCardPolicyChecked Bool
     | AcknowledgeReimbursementPolicyChecked Bool
     | AcknowledgeIdentityVerificationPolicyChecked Bool
     | NoOpMsg
     | LocalStorageSaved Bool
     | EmailVerificationButtonClicked
-    | PlaceChanged Value
-    | GoogleAddressValidationResultReceived (Result Http.Error GoogleAddressValidation)
-    | SetTime Time.Posix
-    | SetZone Time.Zone
     | DismissRampBanner
 
 
@@ -264,10 +194,7 @@ init : Value -> Url.Url -> Nav.Key -> ( Model, Cmd Msg )
 init flags url key =
     ( buildInitialModel flags
     , Cmd.batch
-        [ Task.perform SetTime Time.now
-        , Task.perform SetZone Time.here
-        , initializeAutocomplete (String.trim (Result.withDefault "" (decodeValue (at [ "serverData", "googleMapsApiKey" ] string) flags)))
-        , if showOneTap (buildInitialModel flags) then
+        [ if showOneTap (buildInitialModel flags) then
             initializeOneTap True
 
           else
@@ -299,18 +226,7 @@ update msg model =
                             NoOpNextAction
 
                         Valid ->
-                            case checkCampusAddress model of
-                                StudentCenter ->
-                                    SubmitForm
-
-                                GraduateLivingCenter ->
-                                    SubmitForm
-
-                                ManufacturingRelatedDisciplinesComplex ->
-                                    SubmitForm
-
-                                NotCampusAddress ->
-                                    ValidateAddressWithGoogle
+                            SubmitForm
               }
             , case validateModel model of
                 Invalid fieldId ->
@@ -363,82 +279,6 @@ update msg model =
             , saveToLocalStorage (stringifyModel { model | managerId = Just managerId })
             )
 
-        OrderPhysicalCardChecked orderPhysicalCard ->
-            ( { model
-                | orderPhysicalCard = orderPhysicalCard
-                , nextAction = NoOpNextAction
-              }
-            , saveToLocalStorage (stringifyModel { model | orderPhysicalCard = orderPhysicalCard })
-            )
-
-        UspsFirstClassClicked ->
-            ( { model
-                | shippingMethod = UspsFirstClass
-                , nextAction = NoOpNextAction
-              }
-            , saveToLocalStorage (stringifyModel { model | shippingMethod = UspsFirstClass })
-            )
-
-        FedEx2DayClicked ->
-            ( { model
-                | shippingMethod = FedEx2Day
-                , nextAction = NoOpNextAction
-              }
-            , saveToLocalStorage (stringifyModel { model | shippingMethod = FedEx2Day })
-            )
-
-        FedExOvernightClicked ->
-            ( { model
-                | shippingMethod = FedExOvernight
-                , nextAction = NoOpNextAction
-              }
-            , saveToLocalStorage (stringifyModel { model | shippingMethod = FedExOvernight })
-            )
-
-        AddressLineOneInput addressLineOne ->
-            ( { model
-                | addressLineOne = addressLineOne
-                , nextAction = NoOpNextAction
-                , addressLineTwoRequired = False
-              }
-            , Cmd.none
-            )
-
-        AddressLineTwoInput addressLineTwo ->
-            ( { model
-                | addressLineTwo = addressLineTwo
-                , nextAction = NoOpNextAction
-              }
-            , Cmd.none
-            )
-
-        CityInput city ->
-            ( { model
-                | city = city
-                , nextAction = NoOpNextAction
-                , addressLineTwoRequired = False
-              }
-            , Cmd.none
-            )
-
-        StateInput state ->
-            ( { model
-                | state = Just state
-                , nextAction = NoOpNextAction
-                , addressLineTwoRequired = False
-              }
-            , saveToLocalStorage (stringifyModel { model | state = Just state })
-            )
-
-        ZipInput zip ->
-            ( { model
-                | zip = zip
-                , nextAction = NoOpNextAction
-                , addressLineTwoRequired = False
-              }
-            , Cmd.none
-            )
-
         AcknowledgeCardPolicyChecked acknowledgedCardPolicy ->
             ( { model
                 | acknowledgedCardPolicy = acknowledgedCardPolicy
@@ -469,13 +309,6 @@ update msg model =
         LocalStorageSaved _ ->
             ( { model
                 | nextAction = NoOpNextAction
-                , addressValidationInProgress =
-                    case model.nextAction of
-                        ValidateAddressWithGoogle ->
-                            True
-
-                        _ ->
-                            False
                 , formSubmissionInProgress =
                     case model.nextAction of
                         SubmitForm ->
@@ -492,149 +325,11 @@ update msg model =
                             [ Url.Builder.string "emailAddress" model.emailAddress ]
                         )
 
-                ValidateAddressWithGoogle ->
-                    post
-                        { url =
-                            Url.Builder.crossOrigin
-                                "https://addressvalidation.googleapis.com/v1:validateAddress"
-                                []
-                                [ Url.Builder.string "key" model.googleMapsApiKey ]
-                        , body =
-                            jsonBody
-                                (Json.Encode.object
-                                    [ ( "enableUspsCass", Json.Encode.bool True )
-                                    , ( "address"
-                                      , Json.Encode.object
-                                            [ ( "regionCode", Json.Encode.string "US" )
-                                            , ( "postalCode", Json.Encode.string (String.trim model.zip) )
-                                            , ( "administrativeArea", Json.Encode.string (Maybe.withDefault "" model.state) )
-                                            , ( "locality", Json.Encode.string (String.trim model.city) )
-                                            , ( "addressLines"
-                                              , Json.Encode.list Json.Encode.string
-                                                    (List.map String.trim
-                                                        (List.filter nonBlankString
-                                                            [ model.addressLineOne
-                                                            , model.addressLineTwo
-                                                            ]
-                                                        )
-                                                    )
-                                              )
-                                            ]
-                                      )
-                                    ]
-                                )
-                        , expect = expectJson GoogleAddressValidationResultReceived googleAddressValidationResponseDecoder
-                        }
-
                 SubmitForm ->
                     submitForm True
 
                 NoOpNextAction ->
                     Cmd.none
-            )
-
-        PlaceChanged value ->
-            ( { model
-                | addressLineOne =
-                    String.trim (getAddressComponent (decodePlaceChanged value) "street_number")
-                        ++ " "
-                        ++ String.trim (getAddressComponent (decodePlaceChanged value) "route")
-                , addressLineTwo = String.trim (getAddressComponent (decodePlaceChanged value) "subpremise")
-                , city = String.trim (getAddressComponent (decodePlaceChanged value) "locality")
-                , state = Just (String.trim (getAddressComponent (decodePlaceChanged value) "administrative_area_level_1"))
-                , zip = String.trim (getAddressComponent (decodePlaceChanged value) "postal_code")
-                , nextAction = NoOpNextAction
-              }
-            , Cmd.batch
-                [ Task.attempt (\_ -> NoOpMsg) (focus "address_line_two")
-                , saveToLocalStorage
-                    (stringifyModel
-                        { model
-                            | addressLineOne =
-                                String.trim (getAddressComponent (decodePlaceChanged value) "street_number")
-                                    ++ " "
-                                    ++ String.trim (getAddressComponent (decodePlaceChanged value) "route")
-                            , addressLineTwo = String.trim (getAddressComponent (decodePlaceChanged value) "subpremise")
-                            , city = String.trim (getAddressComponent (decodePlaceChanged value) "locality")
-                            , state = Just (String.trim (getAddressComponent (decodePlaceChanged value) "administrative_area_level_1"))
-                            , zip = String.trim (getAddressComponent (decodePlaceChanged value) "postal_code")
-                        }
-                    )
-                ]
-            )
-
-        GoogleAddressValidationResultReceived result ->
-            ( { model
-                | nextAction = NoOpNextAction
-                , addressValidationInProgress = False
-                , addressLineTwoRequired =
-                    case result of
-                        Ok verdict ->
-                            if List.member "subpremise" (Maybe.withDefault [] verdict.missingComponentTypes) then
-                                True
-
-                            else
-                                False
-
-                        Err _ ->
-                            False
-                , addressIsValid =
-                    case result of
-                        Ok verdict ->
-                            case verdict.addressComplete of
-                                Just addressComplete ->
-                                    Just addressComplete
-
-                                Nothing ->
-                                    if List.member "subpremise" (Maybe.withDefault [] verdict.missingComponentTypes) then
-                                        Just True
-
-                                    else
-                                        Just False
-
-                        Err _ ->
-                            Just True
-                , formSubmissionInProgress =
-                    case result of
-                        Ok verdict ->
-                            if Maybe.withDefault False verdict.addressComplete then
-                                True
-
-                            else
-                                False
-
-                        Err _ ->
-                            True
-              }
-            , case result of
-                Ok verdict ->
-                    if Maybe.withDefault False verdict.addressComplete then
-                        submitForm True
-
-                    else if List.member "subpremise" (Maybe.withDefault [] verdict.missingComponentTypes) then
-                        Task.attempt (\_ -> NoOpMsg) (focus "address_line_two")
-
-                    else
-                        Cmd.none
-
-                Err _ ->
-                    submitForm True
-            )
-
-        SetTime time ->
-            ( { model
-                | time = time
-                , nextAction = NoOpNextAction
-              }
-            , Cmd.none
-            )
-
-        SetZone zone ->
-            ( { model
-                | zone = zone
-                , nextAction = NoOpNextAction
-              }
-            , Cmd.none
             )
 
         DismissRampBanner ->
@@ -650,7 +345,6 @@ subscriptions : Model -> Sub Msg
 subscriptions _ =
     Sub.batch
         [ localStorageSaved LocalStorageSaved
-        , placeChanged PlaceChanged
         ]
 
 
@@ -670,7 +364,7 @@ view model =
                 , text " to issue corporate credit cards and manage reimbursements. We need some information from you to create your BILL Spend & Expense account."
                 ]
             , div [ class "alert", class "alert-primary", class "alert-dismissible", class "mb-4", classList [ ( "d-none", not model.showRampBanner ) ] ]
-                [ text "RoboJackets is currently piloting "
+                [ text "RoboJackets is currently migrating to "
                 , a [ href "https://ramp.com", class "alert-link" ] [ text "Ramp" ]
                 , text " to replace BILL Spend & Expense. Please check with your project manager if you should "
                 , a [ href "https://ramp.robojackets.org", class "alert-link" ] [ text "request a Ramp account" ]
@@ -838,180 +532,26 @@ view model =
                         [ text "Your manager will be responsible for reviewing your credit card transactions and reimbursement requests. This should typically be your project manager." ]
                     ]
                 , div [ class "col-12" ]
-                    [ div [ class "form-check" ]
+                    [ div [ class "form-check", style "cursor" "not-allowed" ]
                         [ input
                             [ id "order_physical_card"
                             , name "order_physical_card"
                             , type_ "checkbox"
                             , class "form-check-input"
                             , Html.Attributes.value "order_physical_card"
-                            , onCheck OrderPhysicalCardChecked
-                            , checked model.orderPhysicalCard
+                            , checked False
+                            , disabled True
                             ]
                             []
-                        , label [ for "order_physical_card", class "form-check-label" ]
+                        , label [ for "order_physical_card", class "form-check-label", style "cursor" "not-allowed" ]
                             [ text "Order a physical card" ]
                         , div [ class "form-text", class "mb-3" ]
-                            [ text "You will only be able to use your physical card once you activate it ", strong [] [ text " and " ], text " are added to a budget. If you choose not to order one now, you can do so within BILL Spend & Expense later." ]
-                        ]
-                    ]
-                , div [ class "col-12", classList [ ( "d-none", not model.orderPhysicalCard ) ] ]
-                    [ label [ for "address_line_one", class "form-label" ] [ text "Mailing Address" ]
-                    , input
-                        [ type_ "text"
-                        , class "form-control"
-                        , classList
-                            [ ( "is-valid", model.showValidation && (isValid (validateAddressLineOne model.addressLineOne) && Maybe.withDefault True model.addressIsValid) )
-                            , ( "is-invalid", model.showValidation && (not (isValid (validateAddressLineOne model.addressLineOne)) || not (Maybe.withDefault True model.addressIsValid)) )
-                            ]
-                        , id "address_line_one"
-                        , name "address_line_one"
-                        , minlength 1
-                        , maxlength 100
-                        , required True
-                        , placeholder "Street Address"
-                        , onInput AddressLineOneInput
-                        , on "change" (succeed FormChanged)
-                        , Html.Attributes.value model.addressLineOne
-                        , preventDefaultOn "keypress" keyDecoder
-                        ]
-                        []
-                    , div [ class "invalid-feedback" ]
-                        [ text
-                            (if isValid (validateAddressLineOne model.addressLineOne) then
-                                feedbackText (validateAddressLineOneGoogleResult model.addressIsValid)
-
-                             else
-                                feedbackText (validateAddressLineOne model.addressLineOne)
-                            )
-                        ]
-                    ]
-                , div [ class "col-12", classList [ ( "d-none", not model.orderPhysicalCard ) ] ]
-                    [ input
-                        [ type_ "text"
-                        , class "form-control"
-                        , classList
-                            [ ( "is-valid", model.showValidation && isValid (validateAddressLineTwo model.addressLineTwo model.addressLineTwoRequired (checkCampusAddress model)) && Maybe.withDefault True model.addressIsValid )
-                            , ( "is-invalid", model.showValidation && (not (isValid (validateAddressLineTwo model.addressLineTwo model.addressLineTwoRequired (checkCampusAddress model))) || not (Maybe.withDefault True model.addressIsValid)) )
-                            ]
-                        , id "address_line_two"
-                        , name "address_line_two"
-                        , maxlength 100
-                        , placeholder "Apt, Suite, Unit, etc. (optional)"
-                        , onInput AddressLineTwoInput
-                        , on "change" (succeed FormChanged)
-                        , Html.Attributes.value model.addressLineTwo
-                        ]
-                        []
-                    , div [ class "invalid-feedback" ]
-                        [ text (feedbackText (validateAddressLineTwo model.addressLineTwo model.addressLineTwoRequired (checkCampusAddress model))) ]
-                    ]
-                , div [ class "col-md-6", classList [ ( "d-none", not model.orderPhysicalCard ) ] ]
-                    [ label [ for "city", class "form-label" ] [ text "City" ]
-                    , input
-                        [ type_ "text"
-                        , class "form-control"
-                        , classList
-                            [ ( "is-valid", model.showValidation && isValid (validateCity model.city) && Maybe.withDefault True model.addressIsValid )
-                            , ( "is-invalid", model.showValidation && (not (isValid (validateCity model.city)) || not (Maybe.withDefault True model.addressIsValid)) )
-                            ]
-                        , id "city"
-                        , name "city"
-                        , minlength 1
-                        , maxlength 40
-                        , placeholder "City"
-                        , required True
-                        , onInput CityInput
-                        , on "change" (succeed FormChanged)
-                        , Html.Attributes.value model.city
-                        ]
-                        []
-                    , div [ class "invalid-feedback" ]
-                        [ text (feedbackText (validateCity model.city)) ]
-                    ]
-                , div [ class "col-md-3", class "col-8", classList [ ( "d-none", not model.orderPhysicalCard ) ] ]
-                    [ label [ for "state", class "form-label" ] [ text "State" ]
-                    , select
-                        [ class "form-select"
-                        , id "state"
-                        , name "state"
-                        , minlength 1
-                        , maxlength 40
-                        , required True
-                        , classList
-                            [ ( "is-valid", model.showValidation && isValid (validateState model.state) && Maybe.withDefault True model.addressIsValid )
-                            , ( "is-invalid", model.showValidation && (not (isValid (validateState model.state)) || not (Maybe.withDefault True model.addressIsValid)) )
-                            ]
-                        , on "change" (Json.Decode.map StateInput targetValue)
-                        ]
-                        ([ option
-                            [ Html.Attributes.value ""
-                            , disabled True
-                            , selected
-                                (case model.state of
-                                    Just _ ->
-                                        False
-
-                                    Nothing ->
-                                        True
-                                )
-                            ]
-                            [ text "Select..." ]
-                         ]
-                            ++ List.map (stateTupleToHtmlOption model.state) (sortBy second (toList statesMap))
-                        )
-                    , div [ class "invalid-feedback" ]
-                        [ text (feedbackText (validateState model.state)) ]
-                    ]
-                , div [ class "col-md-3", class "col-4", class "mb-3", classList [ ( "d-none", not model.orderPhysicalCard ) ] ]
-                    [ label [ for "zip_code", class "form-label" ] [ text "ZIP Code" ]
-                    , input
-                        [ type_ "text"
-                        , toAttribute (inputmode numeric)
-                        , class "form-control"
-                        , id "zip_code"
-                        , name "zip_code"
-                        , placeholder "ZIP Code"
-                        , minlength 5
-                        , maxlength 5
-                        , required True
-                        , onInput ZipInput
-                        , on "change" (succeed FormChanged)
-                        , Html.Attributes.value model.zip
-                        , classList
-                            [ ( "is-valid", model.showValidation && isValid (validateZipCode model.zip) && Maybe.withDefault True model.addressIsValid )
-                            , ( "is-invalid", model.showValidation && (not (isValid (validateZipCode model.zip)) || not (Maybe.withDefault True model.addressIsValid)) )
+                            [ text "Physical BILL Spend & Expense cards are no longer available to order. If you need a physical card, please "
+                            , a [ href "https://ramp.robojackets.org", class "text-secondary" ] [ text "request a Ramp card" ]
+                            , text " instead."
                             ]
                         ]
-                        []
-                    , div [ class "invalid-feedback" ]
-                        [ text (feedbackText (validateZipCode model.zip)) ]
                     ]
-                , div [ class "col-12 mb-3", classList [ ( "d-none", not model.orderPhysicalCard ) ] ]
-                    [ label [ class "form-label" ]
-                        [ text "Shipping Method" ]
-                    , div [ class "list-group" ]
-                        (List.map (shippingMethodToListGroupItem model.shippingMethod model.zone model.time) [ UspsFirstClass, FedEx2Day, FedExOvernight ])
-                    , div [ class "form-text", class "mb-1", class "mt-2" ]
-                        [ text "Estimated delivery dates include 1-2 days to process your request and print your card before the carrier receives it." ]
-                    ]
-                , input
-                    [ type_ "hidden"
-                    , name "shipping_method"
-                    , Html.Attributes.value
-                        (shippingMethodToLabel model.shippingMethod
-                            ++ " ("
-                            ++ (case shippingMethodToCost model.shippingMethod == 0 of
-                                    True ->
-                                        "Free"
-
-                                    False ->
-                                        "$" ++ String.fromInt (shippingMethodToCost model.shippingMethod)
-                               )
-                            ++ ")"
-                        )
-                    ]
-                    []
                 , div [ class "col-12", class "mb-3" ]
                     [ div [ class "form-check", class "mb-2" ]
                         [ input
@@ -1075,7 +615,7 @@ view model =
                             [ text "Please acknowledge the identity verification policy" ]
                         , div [ class "form-text" ]
                             [ text "This information will only be used for identity verification and will not be visible to anyone within RoboJackets. Read more about BILL Spend & Expense's identity verification policies in the "
-                            , a [ href "https://help.bill.com/direct/s/article/5304326" ] [ text "BILL Help Center" ]
+                            , a [ href "https://help.bill.com/direct/s/article/5304326", class "text-secondary" ] [ text "BILL Help Center" ]
                             , text "."
                             ]
                         ]
@@ -1086,7 +626,7 @@ view model =
                         , class "btn"
                         , class "btn-primary"
                         , id "submit_button"
-                        , disabled (model.nextAction /= NoOpNextAction || model.addressValidationInProgress || model.formSubmissionInProgress)
+                        , disabled (model.nextAction /= NoOpNextAction || model.formSubmissionInProgress)
                         ]
                         [ text "Submit Request"
                         ]
@@ -1189,115 +729,6 @@ validateManager selectedManagerId managerOptions selfId =
             Invalid managerFeedbackText
 
 
-validateAddressLineOne : String -> ValidationResult
-validateAddressLineOne addressLineOne =
-    if blankString addressLineOne then
-        Invalid "Please enter your street address"
-
-    else if String.length (String.trim addressLineOne) > 100 then
-        Invalid "Your street address may be a maximum of 100 characters"
-
-    else
-        Valid
-
-
-validateAddressLineOneGoogleResult : Maybe Bool -> ValidationResult
-validateAddressLineOneGoogleResult maybeIsValid =
-    case maybeIsValid of
-        Just False ->
-            Invalid "This doesn't appear to be a valid address"
-
-        _ ->
-            Valid
-
-
-validateAddressLineTwo : String -> Bool -> CampusAddress -> ValidationResult
-validateAddressLineTwo addressLineTwo required campusAddress =
-    if String.length (String.trim addressLineTwo) > 100 then
-        Invalid "Your second address line may be a maximum of 100 characters"
-
-    else if blankString addressLineTwo && (required || campusAddress /= NotCampusAddress) then
-        Invalid
-            ("This address requires "
-                ++ (case campusAddress of
-                        StudentCenter ->
-                            "a mailbox"
-
-                        GraduateLivingCenter ->
-                            "an apartment"
-
-                        ManufacturingRelatedDisciplinesComplex ->
-                            "a room"
-
-                        NotCampusAddress ->
-                            "an apartment or unit"
-                   )
-                ++ " number"
-            )
-
-    else if
-        campusAddress
-            == StudentCenter
-            && not (Regex.contains studentCenterMailboxRegex (String.trim (String.toLower addressLineTwo)))
-    then
-        Invalid "This doesn't appear to be a valid mailbox number"
-
-    else if
-        campusAddress
-            == GraduateLivingCenter
-            && not (Regex.contains graduateLivingCenterMailboxRegex (String.trim (String.toLower addressLineTwo)))
-    then
-        Invalid "This doesn't appear to be a valid apartment number"
-
-    else if
-        campusAddress
-            == ManufacturingRelatedDisciplinesComplex
-            && String.trim (String.toLower addressLineTwo)
-            /= "rm 1312"
-            && String.trim (String.toLower addressLineTwo)
-            /= "room 1312"
-            && String.trim (String.toLower addressLineTwo)
-            /= "mrdc rm 1312"
-            && String.trim (String.toLower addressLineTwo)
-            /= "mrdc room 1312"
-    then
-        Invalid "For delivery to the MRDC loading dock, use Room 1312"
-
-    else
-        Valid
-
-
-validateCity : String -> ValidationResult
-validateCity city =
-    if blankString city then
-        Invalid "Please enter your city"
-
-    else if String.length (String.trim city) > 40 then
-        Invalid "Your city may be a maximum of 40 characters"
-
-    else
-        Valid
-
-
-validateState : Maybe String -> ValidationResult
-validateState selectedState =
-    case selectedState of
-        Just _ ->
-            Valid
-
-        Nothing ->
-            Invalid "Please select your state"
-
-
-validateZipCode : String -> ValidationResult
-validateZipCode zipCode =
-    if String.length zipCode == 5 && String.all isDigit zipCode then
-        Valid
-
-    else
-        Invalid "Please enter exactly 5 digits"
-
-
 validateModel : Model -> ValidationResult
 validateModel model =
     if not (isValid (validateName model.firstName model.lastName).firstNameResult) then
@@ -1321,40 +752,6 @@ validateModel model =
                 True
     then
         Invalid "manager"
-
-    else if model.orderPhysicalCard && not (isValid (validateAddressLineOne model.addressLineOne)) then
-        Invalid "address_line_one"
-
-    else if
-        model.orderPhysicalCard
-            && not
-                (isValid
-                    (validateAddressLineTwo
-                        model.addressLineTwo
-                        model.addressLineTwoRequired
-                        (checkCampusAddress model)
-                    )
-                )
-    then
-        Invalid "address_line_two"
-
-    else if model.orderPhysicalCard && not (isValid (validateCity model.city)) then
-        Invalid "city"
-
-    else if
-        model.orderPhysicalCard
-            && (case model.state of
-                    Just _ ->
-                        False
-
-                    Nothing ->
-                        True
-               )
-    then
-        Invalid "state"
-
-    else if model.orderPhysicalCard && not (isValid (validateZipCode model.zip)) then
-        Invalid "zip_code"
 
     else if not model.acknowledgedCardPolicy then
         Invalid "corporate_card_policy"
@@ -1438,22 +835,6 @@ managerTupleToHtmlOption selectedManagerId selfId ( managerId, managerName ) =
         [ text managerName ]
 
 
-stateTupleToHtmlOption : Maybe String -> ( String, String ) -> Html msg
-stateTupleToHtmlOption selectedState ( stateCode, stateName ) =
-    option
-        [ Html.Attributes.value stateCode
-        , selected
-            (case selectedState of
-                Just selectedStateCode ->
-                    selectedStateCode == stateCode
-
-                Nothing ->
-                    False
-            )
-        ]
-        [ text stateName ]
-
-
 stringifyModel : Model -> String
 stringifyModel model =
     Json.Encode.encode 0
@@ -1469,139 +850,9 @@ stringifyModel model =
                     Nothing ->
                         Json.Encode.null
               )
-            , ( "orderPhysicalCard", Json.Encode.bool model.orderPhysicalCard )
-            , ( "shippingMethod"
-              , case model.shippingMethod of
-                    UspsFirstClass ->
-                        Json.Encode.string "UspsFirstClass"
-
-                    FedEx2Day ->
-                        Json.Encode.string "FedEx2Day"
-
-                    FedExOvernight ->
-                        Json.Encode.string "FedExOvernight"
-              )
-            , ( "addressLineOne", Json.Encode.string (String.trim model.addressLineOne) )
-            , ( "addressLineTwo", Json.Encode.string (String.trim model.addressLineTwo) )
-            , ( "city", Json.Encode.string (String.trim model.city) )
-            , ( "state"
-              , case model.state of
-                    Just state ->
-                        Json.Encode.string state
-
-                    Nothing ->
-                        Json.Encode.null
-              )
-            , ( "zip", Json.Encode.string (String.trim model.zip) )
             , ( "showRampBanner", Json.Encode.bool model.showRampBanner )
             ]
         )
-
-
-keyDecoder : Decoder ( Msg, Bool )
-keyDecoder =
-    field "key" string
-        |> Json.Decode.map
-            (\key ->
-                ( NoOpMsg, preventDefault key )
-            )
-
-
-preventDefault : String -> Bool
-preventDefault key =
-    key == "Enter"
-
-
-decodePlaceChanged : Value -> List AddressComponent
-decodePlaceChanged value =
-    Result.withDefault []
-        (decodeValue
-            (field "address_components"
-                (Json.Decode.list
-                    (Json.Decode.map2 AddressComponent
-                        (field "short_name" string)
-                        (field "types" (Json.Decode.list string))
-                    )
-                )
-            )
-            value
-        )
-
-
-getAddressComponent : List AddressComponent -> String -> String
-getAddressComponent components desiredType =
-    case List.head (List.filter (addressComponentTypeMatches desiredType) components) of
-        Just component ->
-            component.value
-
-        Nothing ->
-            ""
-
-
-addressComponentTypeMatches : String -> AddressComponent -> Bool
-addressComponentTypeMatches desiredType component =
-    List.member desiredType component.types
-
-
-googleAddressValidationResponseDecoder : Decoder GoogleAddressValidation
-googleAddressValidationResponseDecoder =
-    Json.Decode.map2 GoogleAddressValidation
-        (maybe (at [ "result", "verdict", "addressComplete" ] bool))
-        (maybe (at [ "result", "address", "missingComponentTypes" ] (Json.Decode.list string)))
-
-
-checkCampusAddress : Model -> CampusAddress
-checkCampusAddress model =
-    if
-        String.toLower (String.trim model.addressLineOne)
-            == "351 ferst dr nw"
-            && String.toLower (String.trim model.city)
-            == "atlanta"
-            && Maybe.withDefault "" model.state
-            == "GA"
-            && String.trim model.zip
-            == "30332"
-    then
-        StudentCenter
-
-    else if
-        String.toLower (String.trim model.addressLineOne)
-            == "301 10th st nw"
-            && String.toLower (String.trim model.city)
-            == "atlanta"
-            && Maybe.withDefault "" model.state
-            == "GA"
-            && String.trim model.zip
-            == "30318"
-    then
-        GraduateLivingCenter
-
-    else if
-        String.toLower (String.trim model.addressLineOne)
-            == "801 ferst dr nw"
-            && String.toLower (String.trim model.city)
-            == "atlanta"
-            && Maybe.withDefault "" model.state
-            == "GA"
-            && String.trim model.zip
-            == "30332"
-    then
-        ManufacturingRelatedDisciplinesComplex
-
-    else if
-        String.toLower (String.trim model.addressLineOne)
-            == "801 ferst dr"
-            && String.toLower (String.trim model.city)
-            == "atlanta"
-            && Maybe.withDefault "" model.state
-            == "GA"
-            && String.trim model.zip
-            == "30332"
-    then
-        ManufacturingRelatedDisciplinesComplex
-
-    else
-        NotCampusAddress
 
 
 buildInitialModel : Value -> Model
@@ -1652,74 +903,13 @@ buildInitialModel value =
                         Nothing
         )
         (Result.withDefault -1 (decodeValue (at [ "serverData", "selfId" ] int) value))
-        (Result.withDefault True (decodeString (field "orderPhysicalCard" bool) (Result.withDefault "{}" (decodeValue (field "localData" string) value))))
-        (case decodeString (field "shippingMethod" string) (Result.withDefault "{}" (decodeValue (field "localData" string) value)) of
-            Ok "FedEx2Day" ->
-                FedEx2Day
-
-            Ok "FedExOvernight" ->
-                FedExOvernight
-
-            _ ->
-                UspsFirstClass
-        )
-        (String.trim
-            (Result.withDefault
-                (Result.withDefault "" (decodeValue (at [ "serverData", "addressLineOne" ] string) value))
-                (decodeString (field "addressLineOne" string) (Result.withDefault "{}" (decodeValue (field "localData" string) value)))
-            )
-        )
-        (String.trim
-            (Result.withDefault
-                (Result.withDefault "" (decodeValue (at [ "serverData", "addressLineTwo" ] string) value))
-                (decodeString (field "addressLineTwo" string) (Result.withDefault "{}" (decodeValue (field "localData" string) value)))
-            )
-        )
-        (String.trim
-            (Result.withDefault
-                (Result.withDefault "" (decodeValue (at [ "serverData", "city" ] string) value))
-                (decodeString (field "city" string) (Result.withDefault "{}" (decodeValue (field "localData" string) value)))
-            )
-        )
-        (case decodeString (field "state" string) (Result.withDefault "{}" (decodeValue (field "localData" string) value)) of
-            Ok state ->
-                if List.member state (Dict.keys statesMap) then
-                    Just state
-
-                else
-                    Nothing
-
-            Err _ ->
-                case decodeValue (at [ "serverData", "state" ] string) value of
-                    Ok state ->
-                        if List.member state (Dict.keys statesMap) then
-                            Just state
-
-                        else
-                            Nothing
-
-                    Err _ ->
-                        Nothing
-        )
-        (String.trim
-            (Result.withDefault
-                (Result.withDefault "" (decodeValue (at [ "serverData", "zip" ] string) value))
-                (decodeString (field "zip" string) (Result.withDefault "{}" (decodeValue (field "localData" string) value)))
-            )
-        )
-        False
-        Nothing
         False
         False
         False
         False
         False
-        False
-        (String.trim (Result.withDefault "" (decodeValue (at [ "serverData", "googleMapsApiKey" ] string) value)))
         (String.trim (Result.withDefault "" (decodeValue (at [ "serverData", "googleClientId" ] string) value)))
         (String.trim (Result.withDefault "" (decodeValue (at [ "serverData", "googleOneTapLoginUri" ] string) value)))
-        (Time.millisToPosix 0)
-        Time.utc
         NoOpNextAction
         (Result.withDefault True (decodeString (field "showRampBanner" bool) (Result.withDefault "{}" (decodeValue (field "localData" string) value))))
 
@@ -1763,236 +953,11 @@ showOneTap model =
                     False
 
 
-formatTime : Zone -> Posix -> String
-formatTime zone time =
-    (case toWeekday zone time of
-        Mon ->
-            "Monday"
-
-        Tue ->
-            "Tuesday"
-
-        Wed ->
-            "Wednesday"
-
-        Thu ->
-            "Thursday"
-
-        Fri ->
-            "Friday"
-
-        Sat ->
-            "Saturday"
-
-        Sun ->
-            "Sunday"
-    )
-        ++ ", "
-        ++ (case toMonth zone time of
-                Jan ->
-                    "January"
-
-                Feb ->
-                    "February"
-
-                Mar ->
-                    "March"
-
-                Apr ->
-                    "April"
-
-                May ->
-                    "May"
-
-                Jun ->
-                    "June"
-
-                Jul ->
-                    "July"
-
-                Aug ->
-                    "August"
-
-                Sep ->
-                    "September"
-
-                Oct ->
-                    "October"
-
-                Nov ->
-                    "November"
-
-                Dec ->
-                    "December"
-           )
-        ++ " "
-        ++ String.fromInt (toDay zone time)
-
-
-estimateUspsFirstClassDeliveryTime : Zone -> Posix -> Posix
-estimateUspsFirstClassDeliveryTime zone time =
-    case toWeekday zone (addDays time 20.5) of
-        Sun ->
-            addDays time 19.5
-
-        _ ->
-            addDays time 20.5
-
-
-estimateFedEx2DayDeliveryTime : Zone -> Posix -> Posix
-estimateFedEx2DayDeliveryTime zone time =
-    case toWeekday zone (addDays time 4.5) of
-        Sat ->
-            if estimateFedExOvernightDeliveryTime zone time == addDays time 6.5 then
-                addDays time 7.5
-
-            else
-                addDays time 6.5
-
-        Sun ->
-            if estimateFedExOvernightDeliveryTime zone time == addDays time 5.5 then
-                addDays time 6.5
-
-            else
-                addDays time 5.5
-
-        _ ->
-            if estimateFedExOvernightDeliveryTime zone time == addDays time 4.5 then
-                addDays time 5.5
-
-            else
-                addDays time 4.5
-
-
-estimateFedExOvernightDeliveryTime : Zone -> Posix -> Posix
-estimateFedExOvernightDeliveryTime zone time =
-    case toWeekday zone (addDays time 2.5) of
-        Sat ->
-            addDays time 4.5
-
-        Sun ->
-            addDays time 3.5
-
-        _ ->
-            addDays time 2.5
-
-
-addDays : Posix -> Float -> Posix
-addDays input days =
-    millisToPosix (posixToMillis input + ceiling (days * toFloat dayInMilliseconds))
-
-
-shippingMethodToLabel : ShippingMethod -> String
-shippingMethodToLabel method =
-    case method of
-        UspsFirstClass ->
-            "USPS First Class"
-
-        FedEx2Day ->
-            "FedEx 2Day"
-
-        FedExOvernight ->
-            "FedEx Standard Overnight"
-
-
-shippingMethodToCost : ShippingMethod -> Int
-shippingMethodToCost method =
-    case method of
-        UspsFirstClass ->
-            0
-
-        FedEx2Day ->
-            20
-
-        FedExOvernight ->
-            50
-
-
-shippingMethodToOnClickMsg : ShippingMethod -> Msg
-shippingMethodToOnClickMsg method =
-    case method of
-        UspsFirstClass ->
-            UspsFirstClassClicked
-
-        FedEx2Day ->
-            FedEx2DayClicked
-
-        FedExOvernight ->
-            FedExOvernightClicked
-
-
-shippingMethodToDeliveryEstimateFn : ShippingMethod -> (Zone -> Posix -> Posix)
-shippingMethodToDeliveryEstimateFn method =
-    case method of
-        UspsFirstClass ->
-            estimateUspsFirstClassDeliveryTime
-
-        FedEx2Day ->
-            estimateFedEx2DayDeliveryTime
-
-        FedExOvernight ->
-            estimateFedExOvernightDeliveryTime
-
-
-shippingMethodToTrackingDescription : ShippingMethod -> String
-shippingMethodToTrackingDescription method =
-    case method of
-        UspsFirstClass ->
-            "No"
-
-        FedEx2Day ->
-            "FedEx"
-
-        FedExOvernight ->
-            "FedEx"
-
-
-shippingMethodToIcon : ShippingMethod -> Svg msg
-shippingMethodToIcon method =
-    case method of
-        UspsFirstClass ->
-            truckIcon
-
-        FedEx2Day ->
-            airplaneIcon
-
-        FedExOvernight ->
-            airplaneClockIcon
-
-
-shippingMethodToListGroupItem : ShippingMethod -> Zone -> Posix -> ShippingMethod -> Html Msg
-shippingMethodToListGroupItem selectedMethod zone time thisMethod =
-    div [ class "list-group-item", class "list-group-item-action", classList [ ( "active", selectedMethod == thisMethod ) ], onClick (shippingMethodToOnClickMsg thisMethod), style "cursor" "pointer" ]
-        [ h6 [ class "mb-1" ]
-            [ shippingMethodToIcon thisMethod
-            , text (noBreakSpace ++ noBreakSpace ++ shippingMethodToLabel thisMethod)
-            ]
-        , p [ class "mb-0" ] [ text ("Estimated delivery by " ++ formatTime zone (shippingMethodToDeliveryEstimateFn thisMethod zone time)) ]
-        , small []
-            [ text
-                ((case shippingMethodToCost thisMethod == 0 of
-                    True ->
-                        "Free"
-
-                    False ->
-                        "$" ++ String.fromInt (shippingMethodToCost thisMethod) ++ " fee paid by RoboJackets"
-                 )
-                    ++ " • "
-                    ++ shippingMethodToTrackingDescription thisMethod
-                    ++ " tracking"
-                )
-            ]
-        ]
-
-
 
 -- PORTS
 
 
 port submitForm : Bool -> Cmd msg
-
-
-port initializeAutocomplete : String -> Cmd msg
 
 
 port initializeOneTap : Bool -> Cmd msg
@@ -2002,6 +967,3 @@ port saveToLocalStorage : String -> Cmd msg
 
 
 port localStorageSaved : (Bool -> msg) -> Sub msg
-
-
-port placeChanged : (Value -> msg) -> Sub msg

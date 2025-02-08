@@ -132,12 +132,6 @@ def index() -> Any:
             "managerId": session["manager_id"],
             "managerOptions": managers,
             "selfId": session["user_id"],
-            "addressLineOne": session["address_line_one"],
-            "addressLineTwo": session["address_line_two"],
-            "city": session["city"],
-            "state": session["address_state"],
-            "zip": session["zip_code"],
-            "googleMapsApiKey": app.config["GOOGLE_MAPS_FRONTEND_API_KEY"],
             "googleClientId": app.config["GOOGLE_CLIENT_ID"],
             "googleOneTapLoginUri": url_for("verify_google_onetap", _external=True),
         },
@@ -158,11 +152,6 @@ def login() -> Any:  # pylint: disable=too-many-branches,too-many-statements,too
     session["username"] = username
     session["first_name"] = userinfo["given_name"]
     session["last_name"] = userinfo["family_name"]
-    session["address_line_one"] = ""
-    session["address_line_two"] = ""
-    session["city"] = ""
-    session["address_state"] = None
-    session["zip_code"] = ""
     session["manager_id"] = None
     session["sub"] = userinfo["sub"]
 
@@ -248,128 +237,6 @@ def login() -> Any:  # pylint: disable=too-many-branches,too-many-statements,too
                 session["manager_id"] = None
         else:
             raise InternalServerError("Unable to retrieve user information from Apiary")
-
-    if session["user_state"] == "eligible":  # pylint: disable=too-many-nested-blocks
-        with sentry_sdk.start_span(op="ldap.connect"):
-            ldap = Connection(
-                Server("whitepages.gatech.edu"),
-                auto_bind=True,
-            )
-        with sentry_sdk.start_span(op="ldap.search"):
-            result = ldap.search(
-                search_base="dc=whitepages,dc=gatech,dc=edu",
-                search_filter="(uid=" + username + ")",
-                attributes=["postOfficeBox", "homePostalAddress"],
-            )
-
-        georgia_tech_mailbox = None
-        home_address = None
-
-        if result is True:
-            for entry in ldap.entries:
-                if (
-                    "postOfficeBox" in entry
-                    and entry["postOfficeBox"] is not None
-                    and entry["postOfficeBox"].value is not None
-                ):
-                    georgia_tech_mailbox = entry["postOfficeBox"].value
-                if (
-                    "homePostalAddress" in entry
-                    and entry["homePostalAddress"] is not None
-                    and entry["homePostalAddress"].value is not None
-                    and entry["homePostalAddress"].value != "UNPUBLISHED INFO"
-                ):
-                    home_address = entry["homePostalAddress"].value
-
-        if georgia_tech_mailbox is not None:
-            session["address_line_one"] = "351 Ferst Dr NW"
-            session["address_line_two"] = georgia_tech_mailbox.split(",")[0]
-            session["city"] = "Atlanta"
-            session["address_state"] = "GA"
-            session["zip_code"] = "30332"
-        elif home_address is not None:
-            address_validation_response = post(
-                url="https://addressvalidation.googleapis.com/v1:validateAddress",
-                params={"key": app.config["GOOGLE_MAPS_BACKEND_API_KEY"]},
-                json={
-                    "address": {
-                        "regionCode": "US",
-                        "addressLines": [home_address],
-                    },
-                    "enableUspsCass": True,
-                },
-                timeout=(5, 5),
-            )
-
-            if address_validation_response.status_code == 200:
-                address_validation_json = address_validation_response.json()
-
-                session["address_line_one"] = ""
-                session["address_line_two"] = ""
-                session["city"] = ""
-                session["address_state"] = None
-
-                if (
-                    "result" in address_validation_json
-                    and "address" in address_validation_json["result"]
-                    and "postalAddress" in address_validation_json["result"]["address"]
-                ):
-                    if (
-                        "postalCode"
-                        in address_validation_json["result"]["address"]["postalAddress"]
-                    ):
-                        session["zip_code"] = address_validation_json["result"]["address"][
-                            "postalAddress"
-                        ]["postalCode"]
-
-                        if fullmatch(r"^\d{5}-\d{4}$", session["zip_code"]):
-                            session["zip_code"] = session["zip_code"].split("-")[0]
-
-                    if "locality" in address_validation_json["result"]["address"]["postalAddress"]:
-                        session["city"] = address_validation_json["result"]["address"][
-                            "postalAddress"
-                        ]["locality"]
-
-                    if (
-                        "administrativeArea"
-                        in address_validation_json["result"]["address"]["postalAddress"]
-                    ):
-                        session["address_state"] = address_validation_json["result"]["address"][
-                            "postalAddress"
-                        ]["administrativeArea"]
-
-                    if (
-                        "addressLines"
-                        in address_validation_json["result"]["address"]["postalAddress"]
-                        and len(
-                            address_validation_json["result"]["address"]["postalAddress"][
-                                "addressLines"
-                            ]
-                        )
-                        > 0
-                    ):
-                        session["address_line_one"] = address_validation_json["result"]["address"][
-                            "postalAddress"
-                        ]["addressLines"][0]
-
-                    if (
-                        "addressLines"
-                        in address_validation_json["result"]["address"]["postalAddress"]
-                        and len(
-                            address_validation_json["result"]["address"]["postalAddress"][
-                                "addressLines"
-                            ]
-                        )
-                        > 1
-                    ):
-                        session["address_line_two"] = address_validation_json["result"]["address"][
-                            "postalAddress"
-                        ]["addressLines"][1]
-            else:
-                capture_message(
-                    "Failed to validate homePostalAddress from Whitepages: "
-                    + address_validation_response.text
-                )
 
     return redirect(url_for("index"))
 
