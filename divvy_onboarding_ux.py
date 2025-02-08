@@ -4,7 +4,6 @@ Overengineered web form to facilitate onboarding users to BILL Spend & Expense
 
 from datetime import datetime, timezone
 from email.headerregistry import Address
-from re import fullmatch
 from typing import Any, Dict, Union
 
 from authlib.integrations.flask_client import OAuth  # type: ignore
@@ -15,12 +14,10 @@ from flask.helpers import get_debug_flag
 from google.auth.transport import requests
 from google.oauth2 import id_token
 
-from ldap3 import Connection, Server
-
 from requests import delete, get, post
 
 import sentry_sdk
-from sentry_sdk import capture_message, set_user
+from sentry_sdk import set_user
 from sentry_sdk.integrations.flask import FlaskIntegration
 from sentry_sdk.integrations.pure_eval import PureEvalIntegration
 
