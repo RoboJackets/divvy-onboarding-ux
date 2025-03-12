@@ -1,50 +1,76 @@
 {
     "extends": [
-        "config:base"
+        "config:recommended"
     ],
     "prConcurrentLimit": 1,
     "prHourlyLimit": 0,
-    "rebaseStalePrs": true,
+    "rebaseWhen": "behind-base-branch",
     "automerge": true,
     "platformAutomerge": true,
     "lockFileMaintenance": {
         "enabled": true,
-        "schedule": ["before 4pm on Wednesday except before 9am on Wednesday"]
-    },
-    "python": {
-        "packageRules": [
-            {
-                "matchDepNames": ["python"],
-                "rangeStrategy": "replace"
-            },
-            {
-              "matchDepNames": ["Authlib"],
-              "prPriority": 3
-            },
-            {
-              "matchDepNames": ["Flask"],
-              "prPriority": 4
-            }
+        "schedule": [
+            "before 4pm on Wednesday except before 9am on Wednesday"
         ]
-    },
-    "js": {
-        "packageRules": [
-            {
-              "matchDepNames": ["terser"],
-              "prPriority": 1
-            },
-            {
-              "matchDepNames": ["elm"],
-              "prPriority": 2
-            }
-        ]
-    },
-    "docker": {
-        "major": {
-            "enabled": true
-        }
     },
     "rangeStrategy": "pin",
     "timezone": "America/New_York",
-    "schedule": ["before 4pm on Wednesday except before 9am on Wednesday"]
+    "schedule": [
+        "before 4pm on Wednesday except before 9am on Wednesday"
+    ],
+    "packageRules": [
+        {
+            "matchCategories": [
+                "python"
+            ],
+            "matchDepNames": [
+                "python"
+            ],
+            "rangeStrategy": "replace"
+        },
+        {
+            "matchCategories": [
+                "python"
+            ],
+            "matchDepNames": [
+                "Authlib"
+            ],
+            "prPriority": 3
+        },
+        {
+            "matchCategories": [
+                "python"
+            ],
+            "matchDepNames": [
+                "Flask"
+            ],
+            "prPriority": 4
+        },
+        {
+            "matchCategories": [
+                "js"
+            ],
+            "matchDepNames": [
+                "terser"
+            ],
+            "prPriority": 1
+        },
+        {
+            "matchCategories": [
+                "js"
+            ],
+            "matchDepNames": [
+                "elm"
+            ],
+            "prPriority": 2
+        },
+        {
+            "matchCategories": [
+                "docker"
+            ],
+            "major": {
+                "enabled": true
+            }
+        }
+    ]
 }
