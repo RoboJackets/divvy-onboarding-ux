@@ -13,7 +13,7 @@ Authlib = "1.5.2"
 requests = "2.32.3"
 uwsgi = "2.0.29"
 sentry-sdk = {extras = ["pure-eval", "flask"], version = "2.20.0"}
-google-auth = "2.38.0"
+google-auth = "2.39.0"
 
 [tool.poetry.group.dev.dependencies]
 black = "24.10.0"
